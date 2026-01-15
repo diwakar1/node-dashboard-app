@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -7,6 +8,7 @@ const Login = () => {
     password: "",
   });
   const [errorMsg, setErrorMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const auth = localStorage.getItem("user");
@@ -55,14 +57,40 @@ const Login = () => {
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
-        <input
-          type="password"
-          placeholder="Enter Password"
-          className="inputBox"
-          name="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+        {/* Password input with show/hide toggle */}
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter Password"
+            className="inputBox"
+            name="password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            style={{ paddingRight: 60 }}
+          />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: 'absolute',
+                right: 18,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#5b86e5',
+                cursor: 'pointer',
+                fontSize: 22,
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+        </div>
         <button
           type="button"
           className="loginButton"
