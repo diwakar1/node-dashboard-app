@@ -31,7 +31,7 @@ const Login = () => {
   };
 
   return (
-    <div className="container">
+    <div className="login-bg" style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="login">
         <h1>Login</h1>
         <input
@@ -48,9 +48,31 @@ const Login = () => {
           name="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="button" onClick={handleLogin}>
+        <button type="button" className="loginButton" onClick={handleLogin}>
           Login
         </button>
+        {/* Social sign-in footer */}
+        <div style={{ marginTop: 32, textAlign: 'center', color: '#888' }}>
+          <span>Or sign in with</span>
+          <div style={{ marginTop: 12 }}>
+            <a
+              href="#"
+              style={{ margin: '0 10px', color: '#4267B2', fontSize: 24 }}
+              title="Facebook"
+              onClick={e => { e.preventDefault(); alert('Single sign on will be implemented soon.'); }}
+            >
+              <i className="fab fa-facebook"></i> Facebook
+            </a>
+            <a
+              href="#"
+              style={{ margin: '0 10px', color: '#DB4437', fontSize: 24 }}
+              title="Google"
+              onClick={e => { e.preventDefault(); alert('Single sign on will be implemented soon.'); }}
+            >
+              <i className="fab fa-google"></i> Google
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

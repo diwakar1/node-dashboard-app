@@ -69,8 +69,8 @@ const SignUp = () => {
   };
 
   return (
-    <div className="container">
-      <div className="register">
+    <div className="login-bg" style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="login">
         <h1>Sign Up</h1>
         {successMsg && <div className="success-message" style={{ color: 'green', marginBottom: '10px' }}>{successMsg}</div>}
         <input
@@ -106,7 +106,7 @@ const SignUp = () => {
           }}
         />
         {errors.password && <span className="error">{errors.password}</span>}
-        <button className="appButton" type="button" onClick={collectData}>
+        <button className="loginButton" type="button" onClick={collectData}>
           Sign Up
         </button>
       </div>

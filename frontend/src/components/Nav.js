@@ -38,7 +38,7 @@ const Nav = () => {
             <Link to="/profile">Profile</Link>
           </li>
           <li>
-            <Link onClick={logout} to="/login">
+            <Link onClick={logout} to="/login" className="nav-logout-link">
               Logout ({user.name ? user.name : ""})
             </Link>
           </li>
@@ -53,8 +53,8 @@ const Nav = () => {
               />
             </div>
             <div className="nav-right">
-              <Link to="/signup">Sign Up</Link>
-              <Link to="/login">Login</Link>
+              <Link to="/signup" className="nav-auth-link">Sign Up</Link>
+              <Link to="/login" className="nav-auth-link">Login</Link>
             </div>
           </div>
       )}
