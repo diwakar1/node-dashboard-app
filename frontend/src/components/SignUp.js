@@ -1,26 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
+  
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!email.includes("@")) {
-      newErrors.email = "Invalid email address";
-    }
-    if (name.length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
-    if (password.length < 8) {
-      newErrors.password = "Password should be at least 8 characters";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const validateField = (fieldName, value) => {
     let message = "";
@@ -57,23 +47,24 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const collectData = async () => {
-    /*  if(!validateForm()){
-      return;
-    } */
-    const isNameValid = validateField("name", name);
-    const isEmailValid = validateField("email", email);
-    const isPasswordValid = validateField("password", password);
+    const isNameValid = validateField("name", form.name);
+    const isEmailValid = validateField("email", form.email);
+    const isPasswordValid = validateField("password", form.password);
 
     if (isNameValid && isEmailValid && isPasswordValid) {
       let result = await fetch("http://localhost:5000/register", {
         method: "post",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(form),
         headers: {
           "Content-Type": "application/json",
         },
       });
       result = await result.json();
-      navigate("/login");
+      setSuccessMsg("Sign up successful! Redirecting to login...");
+      setTimeout(() => {
+        setSuccessMsg("");
+        navigate("/login");
+      }, 1500);
     }
   };
 
@@ -81,13 +72,14 @@ const SignUp = () => {
     <div className="container">
       <div className="register">
         <h1>Sign Up</h1>
+        {successMsg && <div className="success-message" style={{ color: 'green', marginBottom: '10px' }}>{successMsg}</div>}
         <input
           className="inputBox"
           type="text"
           placeholder="Enter Name"
-          value={name}
+          value={form.name}
           onChange={(e) => {
-            setName(e.target.value);
+            setForm({ ...form, name: e.target.value });
             validateField("name", e.target.value);
           }}
         />
@@ -96,9 +88,9 @@ const SignUp = () => {
           className="inputBox"
           type="text"
           placeholder="Enter Email"
-          value={email}
+          value={form.email}
           onChange={(e) => {
-            setEmail(e.target.value);
+            setForm({ ...form, email: e.target.value });
             validateField("email", e.target.value);
           }}
         />
@@ -107,9 +99,9 @@ const SignUp = () => {
           className="inputBox"
           type="password"
           placeholder="Enter Password"
-          value={password}
+          value={form.password}
           onChange={(e) => {
-            setPassword(e.target.value);
+            setForm({ ...form, password: e.target.value });
             validateField("password", e.target.value);
           }}
         />
