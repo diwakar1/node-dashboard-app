@@ -63,7 +63,16 @@ const Login = () => {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        <button type="button" className="loginButton" onClick={handleLogin}>
+        <button
+          type="button"
+          className="loginButton"
+          onClick={handleLogin}
+          disabled={!form.email.trim() || !form.password.trim()}
+          style={{
+            opacity: (!form.email.trim() || !form.password.trim()) ? 0.6 : 1,
+            cursor: (!form.email.trim() || !form.password.trim()) ? 'not-allowed' : 'pointer',
+          }}
+        >
           Login
         </button>
         {/* Social sign-in footer */}
