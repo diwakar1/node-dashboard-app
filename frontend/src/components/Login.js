@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
     const auth = localStorage.getItem("user");
@@ -12,10 +15,15 @@ const Login = () => {
     }
   }, []);
   const handleLogin = async () => {
-    console.log(email, +" " + password);
+    if (!form.email.trim() || !form.password.trim()) {
+      setErrorMsg("Email and password should not be empty.");
+      return;
+    } else {
+      setErrorMsg("");
+    }
     let result = await fetch("http://localhost:5000/login", {
       method: "post",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(form),
       headers: {
         "Content-Type": "application/json",
       },
@@ -26,7 +34,7 @@ const Login = () => {
       localStorage.setItem("token", JSON.stringify(result.auth));
       navigate("/");
     } else {
-      console.log("Login failed. Please check your credentials.");
+      setErrorMsg("Login failed. Please check your credentials.");
     }
   };
 
@@ -34,19 +42,26 @@ const Login = () => {
     <div className="login-bg" style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="login">
         <h1>Login</h1>
+        {errorMsg && (
+          <div style={{ color: 'red', marginBottom: '10px', fontWeight: 500 }}>
+            {errorMsg}
+          </div>
+        )}
         <input
           type="text"
           placeholder="Enter Email"
           className="inputBox"
           name="email"
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <input
           type="password"
           placeholder="Enter Password"
           className="inputBox"
           name="password"
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
         <button type="button" className="loginButton" onClick={handleLogin}>
           Login
