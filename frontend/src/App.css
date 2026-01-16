@@ -116,6 +116,7 @@
 body, #root {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 .nav-ul {
   display: flex;             /* Make the nav horizontal */

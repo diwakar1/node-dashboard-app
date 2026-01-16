@@ -98,7 +98,6 @@ const Login = () => {
           type="button"
           className="loginButton"
           onClick={handleLogin}
-          disabled={!form.email.trim() || !form.password.trim()}
         >
           Login
         </button>
