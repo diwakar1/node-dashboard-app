@@ -7,6 +7,7 @@
 
 const { validationResult } = require('express-validator');
 const userService = require('../services/userService');
+const JWT_SECRET = process.env.JWT_SECRET || 'ecommerce';
 
 exports.signup = async (req, res) => {
     const errors = validationResult(req);
@@ -52,7 +53,7 @@ exports.login = async (req, res) => {
     user = user.toObject();
     delete user.password;
     try {
-        const token = userService.generateToken(user);
+        const token = userService.generateToken(user, JWT_SECRET);
         res.send({ user, auth: token });
     } catch (err) {
         res.status(500).send({ error: "something wrong in security" });

@@ -30,6 +30,6 @@ exports.hashPassword = async (plain) => {
     return await bcrypt.hash(plain, 10);
 };
 
-exports.generateToken = (user) => {
-    return jwt.sign({ user }, jwtKey, { expiresIn: "2h" });
+exports.generateToken = (user, secret) => {
+    return jwt.sign({ user }, secret, { expiresIn: "2h" });
 };

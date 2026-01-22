@@ -3,4 +3,5 @@
  * Sets up and manages the MongoDB connection using Mongoose.
  */
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/e-comm")
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/e-comm";
+mongoose.connect(MONGO_URI);

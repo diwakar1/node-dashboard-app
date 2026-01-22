@@ -4,6 +4,8 @@
  * Sets up Express, middleware, and mounts API routes.
  */
 
+require('dotenv').config();
+
 const express = require("express");
 require("./db/config");
 const cors = require("cors");
