@@ -26,9 +26,9 @@ app.use(cors(corsOptions));
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
 
-// Mount routes
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
+// Mount versioned routes
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/products", productRoutes);
 
 // Start server
 app.listen(5000, () => {
