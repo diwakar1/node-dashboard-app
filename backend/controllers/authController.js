@@ -1,9 +1,9 @@
-
 /**
  * authController.js
  * Handles user authentication logic: signup and login.
  * Validates input, manages password hashing, and issues JWT tokens.
  */
+const log = (...args) => console.log('[AuthController]', ...args);
 
 const { validationResult } = require('express-validator');
 const userService = require('../services/userService');
@@ -12,18 +12,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'ecommerce';
 exports.signup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        log('Signup validation failed:', errors.array());
         return res.status(400).json({ errors: errors.array() });
     }
     const existingUser = await userService.findUserByEmail(req.body.email);
     if (existingUser) {
+        log('Signup attempt with existing email:', req.body.email);
         return res.status(400).json({ error: "Email already exists" });
     }
     try {
         let user = await userService.createUser(req.body);
         user = user.toObject();
         delete user.password;
+        log('User registered:', user.email);
         res.send({ user });
     } catch (e) {
+        log('Registration error:', e.message);
         res.status(500).send({ error: "registration failed", detail: e.message });
     }
 };
@@ -31,10 +35,12 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        log('Login validation failed:', errors.array());
         return res.status(400).json({ errors: errors.array() });
     }
     let user = await userService.findUserByEmail(req.body.email);
     if (!user) {
+        log('Login failed: email not found', req.body.email);
         return res.status(401).json({ error: "Invalid credentials: Email" });
     }
     if (!user.password.startsWith("$2b$")) {
@@ -42,11 +48,13 @@ exports.login = async (req, res) => {
             user.password = await userService.hashPassword(req.body.password);
             await user.save();
         } else {
+            log('Login failed: invalid credentials for', req.body.email);
             return res.status(401).json({ error: "Invalid credentials" });
         }
     } else {
         const passwordMatch = await userService.comparePassword(req.body.password, user.password);
         if (!passwordMatch) {
+            log('Login failed: invalid password for', req.body.email);
             return res.status(401).json({ error: "Invalid credentials: password" });
         }
     }
@@ -54,8 +62,10 @@ exports.login = async (req, res) => {
     delete user.password;
     try {
         const token = userService.generateToken(user, JWT_SECRET);
+        log('User logged in:', user.email);
         res.send({ user, auth: token });
     } catch (err) {
+        log('JWT generation error:', err.message);
         res.status(500).send({ error: "something wrong in security" });
     }
 };
