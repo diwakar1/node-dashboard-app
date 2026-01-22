@@ -2,6 +2,7 @@
  * index.js
  * Main entry point for the Node.js backend application.
  * Sets up Express, middleware, and mounts API routes.
+ * Swagger UI integration
  */
 
 require('dotenv').config();
@@ -10,6 +11,7 @@ const express = require("express");
 require("./db/config");
 const cors = require("cors");
 const logger = require("./middleware/logger");
+
 
 const app = express();
 app.use(express.json());
@@ -21,6 +23,11 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+// Swagger UI integration
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Import routes
 const authRoutes = require("./routes/auth");
