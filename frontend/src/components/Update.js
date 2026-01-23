@@ -18,7 +18,7 @@ const Update = () => {
 
   const getProductDetails = async () => {
     console.warn(params);
-    let result = await fetch(`http://localhost:5000/product/${params.id}`, {
+    let result = await fetch(`http://localhost:5000/api/v1/products/${params.id}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -39,7 +39,7 @@ const Update = () => {
       return;
     }
 
-    let result = await fetch(`http://localhost:5000/product/${params.id}`, {
+    let result = await fetch(`http://localhost:5000/api/v1/products/${params.id}`, {
       method: "PUT",
       body: JSON.stringify({ name, price, category, company }),
       headers: {

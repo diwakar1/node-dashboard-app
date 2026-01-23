@@ -19,7 +19,7 @@ const AddProduct = () => {
       return;
     }
 
-    let result = await fetch("http://localhost:5000/add-product", {
+    let result = await fetch("http://localhost:5000/api/v1/products", {
       method: "POST",
       body: JSON.stringify({ name, price, category, company }),
       headers: {

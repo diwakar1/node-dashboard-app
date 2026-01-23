@@ -25,7 +25,7 @@ const Login = () => {
     } else {
       setErrorMsg("");
     }
-    let result = await fetch("http://localhost:5000/login", {
+    let result = await fetch("http://localhost:5000/api/v1/auth/login", {
       method: "post",
       body: JSON.stringify(form),
       headers: {

@@ -10,7 +10,7 @@ const ProductList = () => {
   }, []);
 
   const getProducts = async () => {
-    let result = await fetch("http://localhost:5000/products",{
+    let result = await fetch("http://localhost:5000/api/v1/products",{
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -22,7 +22,7 @@ const ProductList = () => {
   console.log(products);
 
   const deleteProduct = async(id) =>{
-    let result = await fetch(`http://localhost:5000/product/${id}`,{
+    let result = await fetch(`http://localhost:5000/api/v1/products/${id}`,{
         method: "Delete",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -38,7 +38,7 @@ const ProductList = () => {
   const searchHandle = async(event) =>{
     let key = event.target.value;
     if(key){
-      let result = await fetch(`http://localhost:5000/search/${key}`)
+      let result = await fetch(`http://localhost:5000/api/v1/products/search/${key}`)
       let modifiedData = await result.json();
       if(modifiedData){
         setProducts(modifiedData)

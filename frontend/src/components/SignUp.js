@@ -52,7 +52,7 @@ const SignUp = () => {
     const isPasswordValid = validateField("password", form.password);
 
     if (isNameValid && isEmailValid && isPasswordValid) {
-      let result = await fetch("http://localhost:5000/register", {
+      let result = await fetch("http://localhost:5000/api/v1/auth/register", {
         method: "post",
         body: JSON.stringify(form),
         headers: {
