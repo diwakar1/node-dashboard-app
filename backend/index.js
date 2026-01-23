@@ -32,9 +32,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Import routes
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
+const refreshRoutes = require("./routes/refresh");
 
 // Mount versioned routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/auth/refresh", refreshRoutes);
 app.use("/api/v1/products", productRoutes);
 
 // Start server

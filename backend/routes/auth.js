@@ -72,20 +72,56 @@ router.post('/signup', registrationValidation, authController.signup);
  *                 type: string
  *                 example: password123
  *     responses:
+
  *       200:
- *         description: Login successful, returns JWT token
+ *         description: Login successful, returns access and refresh tokens
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 auth:
- *                   type: boolean
- *                 token:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
  *                   type: string
  *       401:
  *         description: Invalid credentials
  */
 router.post('/login', loginValidation, authController.login);
+
+/**
+ * @swagger
+ * /api/v1/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Returns new access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *       400:
+ *         description: Refresh token required
+ *       403:
+ *         description: Invalid or expired refresh token
+ */
 
 module.exports = router;

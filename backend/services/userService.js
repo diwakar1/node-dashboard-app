@@ -6,7 +6,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const jwtKey = "ecommerce";
 
 exports.findUserByEmail = async (email) => {
     return await User.findOne({ email });
@@ -30,6 +29,22 @@ exports.hashPassword = async (plain) => {
     return await bcrypt.hash(plain, 10);
 };
 
-exports.generateToken = (user, secret) => {
-    return jwt.sign({ user }, secret, { expiresIn: "2h" });
+
+// Generate access token (short-lived)
+exports.generateAccessToken = (user, secret) => {
+    return jwt.sign({ user }, secret, { expiresIn: "30m" });
+};
+
+// Generate refresh token (longer-lived)
+exports.generateRefreshToken = (user, refreshSecret) => {
+    return jwt.sign({ user }, refreshSecret, { expiresIn: "7d" });
+};
+
+// Verify refresh token
+exports.verifyRefreshToken = (token, refreshSecret) => {
+    try {
+        return jwt.verify(token, refreshSecret);
+    } catch (err) {
+        return null;
+    }
 };

@@ -7,7 +7,9 @@ const log = (...args) => console.log('[AuthController]', ...args);
 
 const { validationResult } = require('express-validator');
 const userService = require('../services/userService');
-const JWT_SECRET = process.env.JWT_SECRET || 'ecommerce';
+const JWT_SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
+const RefreshToken = require('../models/refreshToken');
 
 exports.signup = async (req, res) => {
     const errors = validationResult(req);
@@ -61,9 +63,23 @@ exports.login = async (req, res) => {
     user = user.toObject();
     delete user.password;
     try {
-        const token = userService.generateToken(user, JWT_SECRET);
+        // Generate tokens
+        const accessToken = userService.generateAccessToken(user, JWT_SECRET);
+        const refreshToken = userService.generateRefreshToken(user, REFRESH_SECRET);
+
+        // Store refresh token in DB (overwrite if exists)
+        await RefreshToken.findOneAndUpdate(
+            { userId: user._id },
+            {
+                userId: user._id,
+                token: refreshToken,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            },
+            { upsert: true, new: true }
+        );
+
         log('User logged in:', user.email);
-        res.send({ user, auth: token });
+        res.send({ user, accessToken, refreshToken });
     } catch (err) {
         log('JWT generation error:', err.message);
         res.status(500).send({ error: "something wrong in security" });
