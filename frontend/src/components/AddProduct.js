@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { authFetch, API_BASE_URL, API_VERSION } from "../utils/auth";
 
 const AddProduct = () => {
   const [name, setName] = useState("");
@@ -10,8 +10,6 @@ const AddProduct = () => {
   const [error, setError] = useState(false);
 
   const navigate = useNavigate();
-  const token = JSON.parse(localStorage.getItem("token"));
-  console.log(token); 
 
   const handleAddProduct = async () => {
     if (!name || !price || !category || !company) {
@@ -19,16 +17,11 @@ const AddProduct = () => {
       return;
     }
 
-    let result = await fetch("http://localhost:5000/api/v1/products", {
+    let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products`, {
       method: "POST",
-      body: JSON.stringify({ name, price, category, company }),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
+      body: JSON.stringify({ name, price, category, company })
     });
-
-    result = await result.json();
+    let result = await response.json();
     if (result) {
       navigate('/');
     }

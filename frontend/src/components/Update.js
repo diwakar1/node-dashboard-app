@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { authFetch, API_BASE_URL, API_VERSION } from "../utils/auth";
 
 const Update = () => {
   const [name, setName] = useState("");
@@ -8,7 +9,6 @@ const Update = () => {
   const [category, setCategory] = useState("");
   const [company, setCompany] = useState("");
   const [error, setError] = useState(false);
-  const token = JSON.parse(localStorage.getItem("token"));
 
   const params = useParams();
   const navigate = useNavigate();
@@ -18,13 +18,8 @@ const Update = () => {
 
   const getProductDetails = async () => {
     console.warn(params);
-    let result = await fetch(`http://localhost:5000/api/v1/products/${params.id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    let product = await result.json();
+    let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/${params.id}`);
+    let product = await response.json();
     if (product) {
       setName(product.name);
       setCategory(product.category);
@@ -39,16 +34,11 @@ const Update = () => {
       return;
     }
 
-    let result = await fetch(`http://localhost:5000/api/v1/products/${params.id}`, {
+    let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/${params.id}`, {
       method: "PUT",
-      body: JSON.stringify({ name, price, category, company }),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      body: JSON.stringify({ name, price, category, company })
     });
-
-    result = await result.json();
+    let result = await response.json();
     if (result) {
       navigate("/");
     }
