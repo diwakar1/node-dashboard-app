@@ -4,7 +4,7 @@
  * Protects routes by verifying the Authorization header and decoding the token.
  */
 const jwt = require('jsonwebtoken');
-const jwtKey = "ecommerce";
+const jwtKey = process.env.JWT_SECRET;
 
 module.exports = function verifyToken(req, res, next) {
   const authHeader = req.headers["authorization"];
