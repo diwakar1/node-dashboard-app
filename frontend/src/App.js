@@ -5,10 +5,10 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import SignUp from "./components/SignUp";
 import PrivateComponent from "./components/PrivateComponent";
 import Login from "./components/Login"
-import AddProduct from "./components/AddProduct";
-import ProductList from "./components/ProductList";
-import Update from "./components/Update";
-import Profile from "./components/Profile"
+import AddProduct from "./pages/AddProduct";
+import ProductList from "./pages/ProductList";
+import Update from "./pages/Update";
+import Profile from "./pages/Profile"
 
 function App() {
   const location = useLocation();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { setTokens, API_BASE_URL, API_VERSION } from "../utils/auth";
+import { setTokens, API_BASE_URL, API_VERSION } from "../api/auth";
 
 const Login = () => {
   const [form, setForm] = useState({

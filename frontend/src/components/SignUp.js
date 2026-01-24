@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL, API_VERSION } from "../utils/auth";
+import { API_BASE_URL, API_VERSION } from "../api/auth";
 
 const SignUp = () => {
   const [form, setForm] = useState({
