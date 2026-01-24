@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL, API_VERSION } from "../utils/auth";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -52,19 +53,29 @@ const SignUp = () => {
     const isPasswordValid = validateField("password", form.password);
 
     if (isNameValid && isEmailValid && isPasswordValid) {
-      let result = await fetch(`${API_BASE_URL}${API_VERSION}/auth/register`, {
-        method: "post",
-        body: JSON.stringify(form),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      result = await result.json();
-      setSuccessMsg("Sign up successful! Redirecting to login...");
-      setTimeout(() => {
+      try {
+        let response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/signup`, {
+          method: "post",
+          body: JSON.stringify(form),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let result = await response.json();
+        if (response.ok) {
+          setSuccessMsg("Sign up successful! Redirecting to login...");
+          setTimeout(() => {
+            setSuccessMsg("");
+            navigate("/login");
+          }, 1500);
+        } else {
+          setSuccessMsg("");
+          setErrors((prev) => ({ ...prev, server: result.error || "Registration failed. Please try again." }));
+        }
+      } catch (err) {
         setSuccessMsg("");
-        navigate("/login");
-      }, 1500);
+        setErrors((prev) => ({ ...prev, server: "Network error. Please try again." }));
+      }
     }
   };
 
@@ -106,6 +117,7 @@ const SignUp = () => {
           }}
         />
         {errors.password && <span className="error">{errors.password}</span>}
+        {errors.server && <span className="error">{errors.server}</span>}
         <button className="loginButton" type="button" onClick={collectData}>
           Sign Up
         </button>

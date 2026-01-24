@@ -34,9 +34,9 @@ const Login = () => {
       },
     });
     let result = await response.json();
-    if (result.auth && result.refreshToken) {
+    if (result.accessToken && result.refreshToken) {
       localStorage.setItem("user", JSON.stringify(result.user));
-      setTokens({ accessToken: result.auth, refreshToken: result.refreshToken });
+      setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken });
       navigate("/");
     } else {
       setErrorMsg("Login failed. Please check your credentials.");

@@ -17,7 +17,7 @@ const AddProduct = () => {
       return;
     }
 
-    let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products`, {
+    let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/add`, {
       method: "POST",
       body: JSON.stringify({ name, price, category, company })
     });
