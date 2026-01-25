@@ -38,6 +38,7 @@ export function useForm({ initialValues = {}, validationRules = {} }) {
   };
 
   const handleChange = (e) => {
+    if (!e || !e.target) return;
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
     
@@ -48,6 +49,7 @@ export function useForm({ initialValues = {}, validationRules = {} }) {
   };
 
   const handleBlur = (e) => {
+    if (!e || !e.target) return;
     const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
     validateField(name, value);

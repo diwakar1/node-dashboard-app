@@ -1,10 +1,16 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const PrivateComponent = ()=>{
-    const auth = localStorage.getItem('user');
+    const { isAuthenticated, loading } = useAuth();
+    
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+    
     return(
-        auth?<Outlet/>:<Navigate to="login"/>
+        isAuthenticated ? <Outlet/> : <Navigate to="/login"/>
     )
 }
 export default PrivateComponent;

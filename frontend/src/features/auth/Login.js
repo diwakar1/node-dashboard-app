@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { useForm } from "../../hooks/useForm";
 
 const Login = () => {
   const { login, isAuthenticated } = useAuth();
-  const { values, errors, handleChange, validate, setFieldError } = useForm(
-    { email: "", password: "" },
-    {
-      email: { required: true, requiredMessage: "Email is required" },
-      password: { required: true, requiredMessage: "Password is required" },
+  const { values, errors, handleChange, validate, setFieldError } = useForm({
+    initialValues: { email: "", password: "" },
+    validationRules: {
+      email: { required: true, message: "Email is required" },
+      password: { required: true, message: "Password is required" },
     }
-  );
+  });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -50,7 +50,7 @@ const Login = () => {
           className="inputBox"
           name="email"
           value={values.email}
-          onChange={(e) => handleChange("email", e.target.value)}
+          onChange={handleChange}
         />
         {errors.email && <span className="error">{errors.email}</span>}
         <div style={{ position: 'relative', width: '100%' }}>
@@ -60,7 +60,7 @@ const Login = () => {
             className="inputBox"
             name="password"
             value={values.password}
-            onChange={(e) => handleChange("password", e.target.value)}
+            onChange={handleChange}
             style={{ paddingRight: '50px' }}
           />
           {errors.password && <span className="error">{errors.password}</span>}
