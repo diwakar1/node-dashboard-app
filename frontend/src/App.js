@@ -1,14 +1,14 @@
 import "./App.css";
-import Footer from "./components/Footer";
-import Nav from "./components/Nav";
+import Footer from "./shared/layout/Footer";
+import Nav from "./shared/layout/Nav";
 import { Routes, Route, useLocation } from "react-router-dom";
-import SignUp from "./components/SignUp";
-import PrivateComponent from "./components/PrivateComponent";
-import Login from "./components/Login"
-import AddProduct from "./pages/AddProduct";
-import ProductList from "./pages/ProductList";
-import Update from "./pages/Update";
-import Profile from "./pages/Profile"
+import SignUp from "./features/auth/SignUp";
+import PrivateComponent from "./shared/common/PrivateComponent";
+import Login from "./features/auth/Login";
+import AddProduct from "./features/product/AddProduct";
+import ProductList from "./features/product/ProductList";
+import Update from "./features/product/Update";
+import Profile from "./features/profile/Profile";
 
 function App() {
   const location = useLocation();
