@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { addProduct as addProductApi } from "../api/product";
+import { useProducts } from "../../hooks/useProducts";
+import { useForm } from "../../hooks/useForm";
 
 const AddProduct = () => {
-	const [name, setName] = useState("");
-	const [price, setPrice] = useState("");
-	const [category, setCategory] = useState("");
-	const [company, setCompany] = useState("");
-	const [error, setError] = useState(false);
-
 	const navigate = useNavigate();
+	const { createProduct, loading, error: productError } = useProducts();
+	
+	const { values, errors, handleChange, handleBlur, validate } = useForm({
+		initialValues: {
+			name: "",
+			price: "",
+			category: "",
+			company: ""
+		},
+		validationRules: {
+			name: { required: true, message: "Enter valid name" },
+			price: { required: true, message: "Enter valid price" },
+			category: { required: true, message: "Enter valid category" },
+			company: { required: true, message: "Enter valid company" }
+		}
+	});
 
 	const handleAddProduct = async () => {
-		if (!name || !price || !category || !company) {
-			setError(true);
+		if (!validate()) {
 			return;
 		}
-		let result = await addProductApi({ name, price, category, company });
+		
+		const result = await createProduct(values);
 		if (result) {
 			navigate('/');
 		}
@@ -26,45 +37,60 @@ const AddProduct = () => {
 		<div className="container">
 			 <div className="addProduct">
 			<h3>Add product here</h3>
+			
+			{productError && <span className="error">{productError}</span>}
 
 			<input
 				type="text"
 				className="inputBox"
 				placeholder="Enter product name"
-				value={name}
-				onChange={(e) => setName(e.target.value)}
+				name="name"
+				value={values.name}
+				onChange={handleChange}
+				onBlur={handleBlur}
 			/>
-			{error && !name && <span className="invalid-input">Enter valid name</span>}
+			{errors.name && <span className="invalid-input">{errors.name}</span>}
 
 			<input
 				type="text"
 				className="inputBox"
 				placeholder="Enter product price"
-				value={price}
-				onChange={(e) => setPrice(e.target.value)}
+				name="price"
+				value={values.price}
+				onChange={handleChange}
+				onBlur={handleBlur}
 			/>
-			{error && !price && <span className="invalid-input">Enter valid price</span>}
+			{errors.price && <span className="invalid-input">{errors.price}</span>}
 
 			<input
 				type="text"
 				className="inputBox"
 				placeholder="Enter product category"
-				value={category}
-				onChange={(e) => setCategory(e.target.value)}
+				name="category"
+				value={values.category}
+				onChange={handleChange}
+				onBlur={handleBlur}
 			/>
-			{error && !category && <span className="invalid-input">Enter valid category</span>}
+			{errors.category && <span className="invalid-input">{errors.category}</span>}
 
 			<input
 				type="text"
 				className="inputBox"
 				placeholder="Enter product company"
-				value={company}
-				onChange={(e) => setCompany(e.target.value)}
+				name="company"
+				value={values.company}
+				onChange={handleChange}
+				onBlur={handleBlur}
 			/>
-			{error && !company && <span className="invalid-input">Enter valid company</span>}
+			{errors.company && <span className="invalid-input">{errors.company}</span>}
 
-			<button className="appButton" type="button" onClick={handleAddProduct}>
-				Add Product
+			<button 
+				className="appButton" 
+				type="button" 
+				onClick={handleAddProduct}
+				disabled={loading}
+			>
+				{loading ? "Adding..." : "Add Product"}
 			</button>
 		</div>
 		</div>

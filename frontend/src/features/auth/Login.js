@@ -1,45 +1,37 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { setTokens, API_BASE_URL, API_VERSION } from "../api/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { useForm } from "../../hooks/useForm";
 
 const Login = () => {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-  const [errorMsg, setErrorMsg] = useState("");
+  const { login, isAuthenticated } = useAuth();
+  const { values, errors, handleChange, validate, setFieldError } = useForm(
+    { email: "", password: "" },
+    {
+      email: { required: true, requiredMessage: "Email is required" },
+      password: { required: true, requiredMessage: "Password is required" },
+    }
+  );
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const auth = localStorage.getItem("user");
-    if (auth) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async () => {
-    if (!form.email.trim() || !form.password.trim()) {
-      setErrorMsg("Email and password should not be empty.");
+    if (!validate()) {
       return;
-    } else {
-      setErrorMsg("");
     }
-    let response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/login`, {
-      method: "POST",
-      body: JSON.stringify(form),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    let result = await response.json();
-    if (result.accessToken && result.refreshToken) {
-      localStorage.setItem("user", JSON.stringify(result.user));
-      setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken });
-      navigate("/");
+    
+    const result = await login(values.email, values.password);
+    if (!result.success) {
+      setFieldError("server", result.error);
     } else {
-      setErrorMsg("Login failed. Please check your credentials.");
+      navigate("/");
     }
   };
 
@@ -47,9 +39,9 @@ const Login = () => {
     <div className="login-bg">
       <div className="login">
         <h1>Login</h1>
-        {errorMsg && (
+        {errors.server && (
           <div className="error-message">
-            {errorMsg}
+            {errors.server}
           </div>
         )}
         <input
@@ -57,19 +49,21 @@ const Login = () => {
           placeholder="Enter Email"
           className="inputBox"
           name="email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          value={values.email}
+          onChange={(e) => handleChange("email", e.target.value)}
         />
+        {errors.email && <span className="error">{errors.email}</span>}
         <div style={{ position: 'relative', width: '100%' }}>
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Enter Password"
             className="inputBox"
             name="password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            value={values.password}
+            onChange={(e) => handleChange("password", e.target.value)}
             style={{ paddingRight: '50px' }}
           />
+          {errors.password && <span className="error">{errors.password}</span>}
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}

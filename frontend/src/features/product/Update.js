@@ -1,37 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { fetchProductById, updateProduct as updateProductApi } from "../api/product";
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useProducts } from "../../hooks/useProducts";
+import { useForm } from "../../hooks/useForm";
 
 const Update = () => {
-	const [name, setName] = useState("");
-	const [price, setPrice] = useState("");
-	const [category, setCategory] = useState("");
-	const [company, setCompany] = useState("");
-	const [error, setError] = useState(false);
-
 	const params = useParams();
 	const navigate = useNavigate();
+	const { editProduct, loading, error: productError, getProductById } = useProducts();
+
+	const { values, errors, setValues, handleChange, handleBlur, validate } = useForm({
+		initialValues: {
+			name: "",
+			price: "",
+			category: "",
+			company: ""
+		},
+		validationRules: {
+			name: { required: true, message: "Enter valid name" },
+			price: { required: true, message: "Enter valid price" },
+			category: { required: true, message: "Enter valid category" },
+			company: { required: true, message: "Enter valid company" }
+		}
+	});
+
 	useEffect(() => {
 		getProductDetails();
 	}, []);
 
 	const getProductDetails = async () => {
-		let product = await fetchProductById(params.id);
+		const product = await getProductById(params.id);
 		if (product) {
-			setName(product.name);
-			setCategory(product.category);
-			setPrice(product.price);
-			setCompany(product.company);
+			setValues({
+				name: product.name,
+				price: product.price,
+				category: product.category,
+				company: product.company
+			});
 		}
 	};
 
 	const handleUpdateProduct = async () => {
-		if (!name || !price || !category || !company) {
-			setError(true);
+		if (!validate()) {
 			return;
 		}
-		let result = await updateProductApi(params.id, { name, price, category, company });
+		const result = await editProduct(params.id, values);
 		if (result) {
 			navigate("/");
 		}
@@ -41,56 +53,68 @@ const Update = () => {
 		<div className="container">
 			<div className="addProduct">
 				<h3>Update product here</h3>
+				
+				{productError && <span className="error">{productError}</span>}
+				
 				<input
 					type="text"
 					className="inputBox"
 					placeholder="Enter product name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
+					name="name"
+					value={values.name}
+					onChange={handleChange}
+					onBlur={handleBlur}
 				/>
-				{error && !name && (
-					<span className="invalid-input">Enter valid name</span>
+				{errors.name && (
+					<span className="invalid-input">{errors.name}</span>
 				)}
 
 				<input
 					type="text"
 					className="inputBox"
 					placeholder="Enter product price"
-					value={price}
-					onChange={(e) => setPrice(e.target.value)}
+					name="price"
+					value={values.price}
+					onChange={handleChange}
+					onBlur={handleBlur}
 				/>
-				{error && !price && (
-					<span className="invalid-input">Enter valid price</span>
+				{errors.price && (
+					<span className="invalid-input">{errors.price}</span>
 				)}
 
 				<input
 					type="text"
 					className="inputBox"
 					placeholder="Enter product category"
-					value={category}
-					onChange={(e) => setCategory(e.target.value)}
+					name="category"
+					value={values.category}
+					onChange={handleChange}
+					onBlur={handleBlur}
 				/>
-				{error && !category && (
-					<span className="invalid-input">Enter valid category</span>
+				{errors.category && (
+					<span className="invalid-input">{errors.category}</span>
 				)}
 
 				<input
 					type="text"
 					className="inputBox"
 					placeholder="Enter product company"
-					value={company}
-					onChange={(e) => setCompany(e.target.value)}
+					name="company"
+					value={values.company}
+					onChange={handleChange}
+					onBlur={handleBlur}
 				/>
-				{error && !company && (
-					<span className="invalid-input">Enter valid company</span>
+				{errors.company && (
+					<span className="invalid-input">{errors.company}</span>
 				)}
 
 				<button
 					className="appButton"
 					type="button"
 					onClick={handleUpdateProduct}
+					disabled={loading}
 				>
-					Update Product
+					{loading ? "Updating..." : "Update Product"}
 				</button>
 			</div>
 		</div>

@@ -1,81 +1,51 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL, API_VERSION } from "../api/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { useForm } from "../../hooks/useForm";
 
 const SignUp = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [successMsg, setSuccessMsg] = useState("");
-  
-
-
-  const validateField = (fieldName, value) => {
-    let message = "";
-    if (!value.trim()) {
-      message = `${
-        fieldName[0].toUpperCase() + fieldName.slice(1)
-      } is required`;
-    } else {
-      switch (fieldName) {
-        case "name":
-          if (value.length < 2) {
-            message = "Name must be at least two characters";
-          }
-          break;
-        case "email":
-          if (!value.includes("@")) {
-            message = "Invalid email address";
-          }
-          break;
-        case "password":
-          if (value.length < 8) {
-            message = "Password should be at least 8 characters";
-          }
-          break;
-        default:
-          break;
-      }
+  const { signup } = useAuth();
+  const { values, errors, handleChange, handleBlur, validate, setFieldError } = useForm(
+    { name: "", email: "", password: "" },
+    {
+      name: {
+        required: true,
+        minLength: 2,
+        requiredMessage: "Name is required",
+        minLengthMessage: "Name must be at least two characters",
+      },
+      email: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        requiredMessage: "Email is required",
+        patternMessage: "Invalid email address",
+      },
+      password: {
+        required: true,
+        minLength: 8,
+        requiredMessage: "Password is required",
+        minLengthMessage: "Password should be at least 8 characters",
+      },
     }
-
-    setErrors((prev) => ({ ...prev, [fieldName]: message }));
-    return message === "";
-  };
-
+  );
+  const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
 
   const collectData = async () => {
-    const isNameValid = validateField("name", form.name);
-    const isEmailValid = validateField("email", form.email);
-    const isPasswordValid = validateField("password", form.password);
+    if (!validate()) {
+      return;
+    }
 
-    if (isNameValid && isEmailValid && isPasswordValid) {
-      try {
-        let response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/signup`, {
-          method: "post",
-          body: JSON.stringify(form),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        let result = await response.json();
-        if (response.ok) {
-          setSuccessMsg("Sign up successful! Redirecting to login...");
-          setTimeout(() => {
-            setSuccessMsg("");
-            navigate("/login");
-          }, 1500);
-        } else {
-          setSuccessMsg("");
-          setErrors((prev) => ({ ...prev, server: result.error || "Registration failed. Please try again." }));
-        }
-      } catch (err) {
+    const result = await signup(values.name, values.email, values.password);
+    if (result.success) {
+      setSuccessMsg("Sign up successful! Redirecting to login...");
+      setTimeout(() => {
         setSuccessMsg("");
-        setErrors((prev) => ({ ...prev, server: "Network error. Please try again." }));
-      }
+        navigate("/login");
+      }, 1500);
+    } else {
+      setSuccessMsg("");
+      setFieldError("server", result.error);
     }
   };
 
@@ -88,33 +58,27 @@ const SignUp = () => {
           className="inputBox"
           type="text"
           placeholder="Enter Name"
-          value={form.name}
-          onChange={(e) => {
-            setForm({ ...form, name: e.target.value });
-            validateField("name", e.target.value);
-          }}
+          value={values.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+          onBlur={() => handleBlur("name")}
         />
         {errors.name && <span className="error">{errors.name}</span>}
         <input
           className="inputBox"
           type="text"
           placeholder="Enter Email"
-          value={form.email}
-          onChange={(e) => {
-            setForm({ ...form, email: e.target.value });
-            validateField("email", e.target.value);
-          }}
+          value={values.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+          onBlur={() => handleBlur("email")}
         />
         {errors.email && <span className="error">{errors.email}</span>}
         <input
           className="inputBox"
           type="password"
           placeholder="Enter Password"
-          value={form.password}
-          onChange={(e) => {
-            setForm({ ...form, password: e.target.value });
-            validateField("password", e.target.value);
-          }}
+          value={values.password}
+          onChange={(e) => handleChange("password", e.target.value)}
+          onBlur={() => handleBlur("password")}
         />
         {errors.password && <span className="error">{errors.password}</span>}
         {errors.server && <span className="error">{errors.server}</span>}

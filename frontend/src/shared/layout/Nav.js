@@ -1,17 +1,13 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+
 const Nav = () => {
-  const auth = localStorage.getItem("user");
-  const user = JSON.parse(auth);
-  const navigate = useNavigate();
-  const logout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <div style={{ width: "100%" }}>
-      {auth ? (
+      {isAuthenticated ? (
         <ul
           className="nav-ul"
           style={{
