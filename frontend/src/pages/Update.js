@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { authFetch, API_BASE_URL, API_VERSION } from "../api/auth";
+import { fetchProductById, updateProduct as updateProductApi } from "../api/product";
 
 const Update = () => {
 	const [name, setName] = useState("");
@@ -17,8 +17,7 @@ const Update = () => {
 	}, []);
 
 	const getProductDetails = async () => {
-		let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/${params.id}`);
-		let product = await response.json();
+		let product = await fetchProductById(params.id);
 		if (product) {
 			setName(product.name);
 			setCategory(product.category);
@@ -32,12 +31,7 @@ const Update = () => {
 			setError(true);
 			return;
 		}
-
-		let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/${params.id}`, {
-			method: "PUT",
-			body: JSON.stringify({ name, price, category, company })
-		});
-		let result = await response.json();
+		let result = await updateProductApi(params.id, { name, price, category, company });
 		if (result) {
 			navigate("/");
 		}

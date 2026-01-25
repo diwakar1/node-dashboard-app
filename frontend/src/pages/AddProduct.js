@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authFetch, API_BASE_URL, API_VERSION } from "../api/auth";
+import { addProduct as addProductApi } from "../api/product";
 
 const AddProduct = () => {
 	const [name, setName] = useState("");
@@ -16,12 +16,7 @@ const AddProduct = () => {
 			setError(true);
 			return;
 		}
-
-		let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/add`, {
-			method: "POST",
-			body: JSON.stringify({ name, price, category, company })
-		});
-		let result = await response.json();
+		let result = await addProductApi({ name, price, category, company });
 		if (result) {
 			navigate('/');
 		}

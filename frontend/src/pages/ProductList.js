@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { authFetch, API_BASE_URL, API_VERSION } from "../api/auth";
+import { fetchProducts, deleteProduct as deleteProductApi, searchProducts } from "../api/product";
 
 const ProductList = () => {
 	const [products, setProducts] = useState([]);
@@ -9,27 +9,25 @@ const ProductList = () => {
 		getProducts();
 	}, []);
 
+
 	const getProducts = async () => {
-		let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products`);
-		const data = await response.json();
+		const data = await fetchProducts();
 		setProducts(data);
 	};
 
+
 	const deleteProduct = async(id) =>{
-		let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/${id}`,{
-				method: "Delete"
-		});
-		const resultJsonData = await response.json();
-		 if(resultJsonData){
-				getProducts()
-		 }
+		const resultJsonData = await deleteProductApi(id);
+		if(resultJsonData){
+			getProducts();
+		}
 	}
+
 
 	const searchHandle = async(event) =>{
 		let key = event.target.value;
 		if(key){
-			let response = await authFetch(`${API_BASE_URL}${API_VERSION}/products/search/${key}`)
-			let modifiedData = await response.json();
+			let modifiedData = await searchProducts(key);
 			if(modifiedData){
 				setProducts(modifiedData)
 			}else{
@@ -38,7 +36,6 @@ const ProductList = () => {
 		}else{
 			getProducts()
 		}
-   
 	}
 
 	return (
