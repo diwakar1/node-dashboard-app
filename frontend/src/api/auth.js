@@ -1,24 +1,27 @@
+import { API_BASE_URL, API_VERSION, AUTH_ENDPOINTS } from "../constants/apiEndpoints";
+import { TOKEN_CONFIG } from "../constants/config";
+import { AUTH_ERRORS } from "../constants/errorMessages";
+
 // Utility for handling access and refresh tokens, and authenticated fetch
-export const API_BASE_URL = "http://localhost:5000";
-export const API_VERSION = "/api/v1";
+export { API_BASE_URL, API_VERSION };
 
 export function getAccessToken() {
-	return JSON.parse(localStorage.getItem("token"));
+	return JSON.parse(localStorage.getItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY));
 }
 
 export function getRefreshToken() {
-	return JSON.parse(localStorage.getItem("refreshToken"));
+	return JSON.parse(localStorage.getItem(TOKEN_CONFIG.REFRESH_TOKEN_KEY));
 }
 
 export function setTokens({ accessToken, refreshToken }) {
-	if (accessToken) localStorage.setItem("token", JSON.stringify(accessToken));
-	if (refreshToken) localStorage.setItem("refreshToken", JSON.stringify(refreshToken));
+	if (accessToken) localStorage.setItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY, JSON.stringify(accessToken));
+	if (refreshToken) localStorage.setItem(TOKEN_CONFIG.REFRESH_TOKEN_KEY, JSON.stringify(refreshToken));
 }
 
 export function clearTokens() {
-	localStorage.removeItem("token");
-	localStorage.removeItem("refreshToken");
-	localStorage.removeItem("user");
+	localStorage.removeItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY);
+	localStorage.removeItem(TOKEN_CONFIG.REFRESH_TOKEN_KEY);
+	localStorage.removeItem(TOKEN_CONFIG.USER_KEY);
 }
 
 // Authenticated fetch with automatic token refresh
@@ -33,7 +36,7 @@ export async function authFetch(url, options = {}) {
 	if (response.status === 401) {
 		if (refreshToken) {
 			// Try to refresh token
-			const refreshRes = await fetch(`${API_BASE_URL}${API_VERSION}/auth/refresh`, {
+			const refreshRes = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.REFRESH}`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ refreshToken }),
@@ -47,7 +50,7 @@ export async function authFetch(url, options = {}) {
 			} else {
 				clearTokens();
 				window.location.href = "/login";
-				throw new Error("Session expired. Please login again.");
+				throw new Error(AUTH_ERRORS.UNAUTHORIZED);
 			}
 		} else {
 			// No refresh token, force logout and redirect

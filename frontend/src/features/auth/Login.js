@@ -3,14 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useForm } from "../../hooks/useForm";
+import { VALIDATION_RULES } from "../../constants/config";
+import { AUTH_ERRORS } from "../../constants/errorMessages";
 
 const Login = () => {
   const { login, isAuthenticated } = useAuth();
   const { values, errors, handleChange, validate, setFieldError } = useForm({
     initialValues: { email: "", password: "" },
     validationRules: {
-      email: { required: true, message: "Email is required" },
-      password: { required: true, message: "Password is required" },
+      email: { 
+        required: true, 
+        pattern: VALIDATION_RULES.EMAIL_PATTERN,
+        message: AUTH_ERRORS.INVALID_EMAIL 
+      },
+      password: { 
+        required: true, 
+        minLength: VALIDATION_RULES.PASSWORD_MIN_LENGTH,
+        message: AUTH_ERRORS.INVALID_PASSWORD 
+      },
     }
   });
   const [showPassword, setShowPassword] = useState(false);

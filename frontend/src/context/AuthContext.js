@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setTokens, clearTokens, API_BASE_URL, API_VERSION } from "../api/auth";
+import { setTokens, clearTokens, API_BASE_URL } from "../api/auth";
+import { AUTH_ENDPOINTS } from "../constants/apiEndpoints";
+import { TOKEN_CONFIG } from "../constants/config";
+import { AUTH_ERRORS } from "../constants/errorMessages";
 
 const AuthContext = createContext(null);
 
@@ -11,8 +14,8 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    const accessToken = localStorage.getItem("accessToken");
+    const userData = localStorage.getItem(TOKEN_CONFIG.USER_KEY);
+    const accessToken = localStorage.getItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY);
     
     if (userData && accessToken) {
       setUser(JSON.parse(userData));
@@ -23,7 +26,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.LOGIN}`, {
         method: "POST",
         body: JSON.stringify({ email, password }),
         headers: {
@@ -33,22 +36,22 @@ export function AuthProvider({ children }) {
       const result = await response.json();
       
       if (result.accessToken && result.refreshToken) {
-        localStorage.setItem("user", JSON.stringify(result.user));
+        localStorage.setItem(TOKEN_CONFIG.USER_KEY, JSON.stringify(result.user));
         setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken });
         setUser(result.user);
         setIsAuthenticated(true);
         return { success: true };
       } else {
-        return { success: false, error: result.error || "Login failed. Please check your credentials." };
+        return { success: false, error: result.error || AUTH_ERRORS.LOGIN_FAILED };
       }
     } catch (err) {
-      return { success: false, error: "Network error. Please try again." };
+      return { success: false, error: AUTH_ERRORS.NETWORK_ERROR };
     }
   };
 
   const logout = () => {
     clearTokens();
-    localStorage.removeItem("user");
+    localStorage.removeItem(TOKEN_CONFIG.USER_KEY);
     setUser(null);
     setIsAuthenticated(false);
     navigate("/login");
@@ -56,7 +59,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (name, email, password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/signup`, {
+      const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.SIGNUP}`, {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
         headers: {
@@ -68,10 +71,10 @@ export function AuthProvider({ children }) {
       if (response.ok) {
         return { success: true };
       } else {
-        return { success: false, error: result.error || "Registration failed. Please try again." };
+        return { success: false, error: result.error || AUTH_ERRORS.SIGNUP_FAILED };
       }
     } catch (err) {
-      return { success: false, error: "Network error. Please try again." };
+      return { success: false, error: AUTH_ERRORS.NETWORK_ERROR };
     }
   };
 

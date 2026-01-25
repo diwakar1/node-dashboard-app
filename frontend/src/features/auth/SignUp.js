@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useForm } from "../../hooks/useForm";
+import { VALIDATION_RULES, UI_CONSTANTS } from "../../constants/config";
+import { AUTH_ERRORS, VALIDATION_ERRORS } from "../../constants/errorMessages";
 
 const SignUp = () => {
   const { signup } = useAuth();
@@ -10,18 +12,18 @@ const SignUp = () => {
     validationRules: {
       name: {
         required: true,
-        minLength: 2,
-        message: "Name must be at least two characters",
+        minLength: VALIDATION_RULES.NAME_MIN_LENGTH,
+        message: VALIDATION_ERRORS.MIN_LENGTH("Name", VALIDATION_RULES.NAME_MIN_LENGTH),
       },
       email: {
         required: true,
-        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        message: "Invalid email address",
+        pattern: VALIDATION_RULES.EMAIL_PATTERN,
+        message: AUTH_ERRORS.INVALID_EMAIL,
       },
       password: {
         required: true,
-        minLength: 8,
-        message: "Password should be at least 8 characters",
+        minLength: VALIDATION_RULES.PASSWORD_MIN_LENGTH,
+        message: AUTH_ERRORS.INVALID_PASSWORD,
       },
     }
   });
@@ -39,7 +41,7 @@ const SignUp = () => {
       setTimeout(() => {
         setSuccessMsg("");
         navigate("/login");
-      }, 1500);
+      }, UI_CONSTANTS.REDIRECT_DELAY);
     } else {
       setSuccessMsg("");
       setFieldError("server", result.error);
