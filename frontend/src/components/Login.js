@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { setTokens, API_BASE_URL, API_VERSION } from "../api/auth";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -25,17 +26,17 @@ const Login = () => {
     } else {
       setErrorMsg("");
     }
-    let result = await fetch("http://localhost:5000/api/v1/auth/login", {
-      method: "post",
+    let response = await fetch(`${API_BASE_URL}${API_VERSION}/auth/login`, {
+      method: "POST",
       body: JSON.stringify(form),
       headers: {
         "Content-Type": "application/json",
       },
     });
-    result = await result.json();
-    if (result.auth) {
+    let result = await response.json();
+    if (result.accessToken && result.refreshToken) {
       localStorage.setItem("user", JSON.stringify(result.user));
-      localStorage.setItem("token", JSON.stringify(result.auth));
+      setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken });
       navigate("/");
     } else {
       setErrorMsg("Login failed. Please check your credentials.");
