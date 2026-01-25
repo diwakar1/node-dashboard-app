@@ -1,4 +1,4 @@
-import "./App.css";
+import "./styles/App.css";
 import Footer from "./shared/layout/Footer";
 import Nav from "./shared/layout/Nav";
 import { Routes, Route, useLocation } from "react-router-dom";
