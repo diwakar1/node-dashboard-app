@@ -1,0 +1,25 @@
+{
+  "name": "node-dashboard-app",
+  "version": "1.0.0",
+  "description": "Full-stack Node.js dashboard application with React frontend and Express backend",
+  "scripts": {
+    "dev": "concurrently -n \"API,REACT\" -c \"bgBlue.bold,bgMagenta.bold\" --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm start",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "deploy": "npm run build && npm run start"
+  },
+  "keywords": [
+    "react",
+    "express",
+    "node",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
