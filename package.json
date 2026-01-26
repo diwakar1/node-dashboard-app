@@ -17,7 +17,7 @@
     "node",
     "dashboard"
   ],
-  "author": "",
+  "author": "Diwakar Sharma",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
