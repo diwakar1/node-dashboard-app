@@ -11,6 +11,7 @@ const express = require("express");
 require("./db/config");
 const cors = require("cors");
 const logger = require("./middleware/logger");
+const path = require("path");
 
 
 const app = express();
@@ -18,7 +19,9 @@ app.use(express.json());
 app.use(logger);
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: process.env.NODE_ENV === "production" 
+    ? process.env.FRONTEND_URL 
+    : "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -39,8 +42,21 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/auth/refresh", refreshRoutes);
 app.use("/api/v1/products", productRoutes);
 
+// Serve React frontend in production
+if (process.env.NODE_ENV === "production") {
+  // Serve static files from React build
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  
+  // Handle React routing - return index.html for all non-API routes
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
+  });
+}
+
 // Start server
-app.listen(5000, () => {
-  console.log("Server started on port 5000");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
