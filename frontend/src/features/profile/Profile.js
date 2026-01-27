@@ -34,11 +34,10 @@ const Profile = () => {
 
 const styles = {
 	profileContainer: {
-		padding: "20px",
+		padding: "1rem",
 		maxWidth: "400px",
 		marginTop: "1rem",
 		marginLeft: "1rem",
-		padding: "1rem",
 		borderRadius: "8px",
 	},
 	imageContainer: {
