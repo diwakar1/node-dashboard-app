@@ -1,58 +1,57 @@
+# Dashboard Application - Frontend Side
 
-It is a full-stack Dashboard Application built with React,Express and MongoDB that allows users to securely sign up,log in and manage products. Authentication is handled using JWT to ensure secure access to protected routes. 
+Modern React application for product management with JWT authentication and auto token refresh.
 
-Featuers:
-User Authentication
-  . sign up and login functionality
-  . secure authentication using JWT
-  .bcrypt for password hashing
-Product Mangagement
-  . Add Product
-  . Search Product
-  . Delete Product
-Protected Routes
-  . Only authenticated users can access dashboard features
+## Tech Stack
 
-Full-Stack Architecture
-  . Frontend: React
-  . Backend: Node.js + Express
-  .Database: MongoDB
+- React 19 + Vite-Fast
+- React Router DOM v7
+- ES Modules - Modern JavaScript module system
+- Context API - Global state management
+- LocalStorage - Token persistence
 
-  
+## Architecture
 
-📁 Initial Project Structure
-node-dashboard-app/
-├── backend/
-│   ├── db/
-│   │   ├── User.js
-│   │   ├── Product.js
-│   │   └── config.js
-│   ├── index.js
-│   ├── package.json
-    ├── package.lock.json
-│   
-│
-├── frontend/
-│   ├── public/
-               ├── index.html
-│   ├── src/
-             components/
-                        ├── AddProduct.js
-                        ├── Login.js
-                        ├── Footer.js
-                        ├── Nav.js
-                        ├── privateComponent.js
-                        ├── ProductList.js
-                        ├── Profile.js
-                        ├── signup.js
-                        ├── Update.js
-                          
-│   ├── package.json
-     ├── package-lock.json
-│   
-│
-└── .gitignore
+```
+src/
+├── api/           # API layer with auto token refresh (auth.js, product.js)
+├── context/       # AuthContext for global auth state
+├── features/      # Feature modules (auth, product, profile)
+├── hooks/         # Custom hooks (useProducts, useForm)
+├── routes/        # Route configuration
+├── shared/        # PrivateComponent, Nav, Footer
+└── constants/     # Config, endpoints, error messages
+```
 
+## Design Pattern
+
+Feature-based architecture with separation of concerns. Custom hooks handle business logic, Context API manages auth, and `authFetch()` automatically refreshes expired tokens.
+
+## Features
+
+- Authentication - JWT login/signup with persistent sessions and auto token refresh
+- Product CRUD - Create, read, update, delete products with search
+- Protected Routes - Automatic authentication checks via PrivateComponent
+- Error Handling - Loading states and user-friendly error messages
+
+## Quick Start
+
+```bash
+cd frontend
+npm install
+npm run dev      # Start dev server
+npm run build    # Production build
+npm run test     # Run tests
+```
+
+## Routes
+
+- `/login`, `/signup` - Public
+- `/`, `/add`, `/update/:id`, `/profile` - Protected (requires auth)
+
+---
+
+**Prerequisites:** Node.js 16+, Backend server running | [Backend Docs](../backend/README.md)
 
 
 
