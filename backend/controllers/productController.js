@@ -15,6 +15,9 @@ exports.addProduct = async (req, res) => {
         res.send(result);
     } catch (e) {
         log('Add product error:', e.message);
+        if (e.message.includes('Invalid category')) {
+            return res.status(400).send({ error: e.message });
+        }
         res.status(500).send({ error: "Failed to add product", detail: e.message });
     }
 };
@@ -63,6 +66,9 @@ exports.updateProduct = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Update product error:', err.message);
+        if (err.message.includes('Invalid category')) {
+            return res.status(400).send({ error: err.message });
+        }
         res.status(500).send({ error: "Failed to update product" });
     }
 };
