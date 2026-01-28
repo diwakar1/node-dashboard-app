@@ -36,11 +36,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
 const refreshRoutes = require("./routes/refresh");
+const categoryRoutes = require("./routes/category");
+const dashboardRoutes = require("./routes/dashboard");
 
 // Mount versioned routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/auth/refresh", refreshRoutes);
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // Serve React frontend in production
 if (process.env.NODE_ENV === "production") {
