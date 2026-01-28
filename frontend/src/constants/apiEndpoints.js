@@ -1,8 +1,8 @@
 // API Configuration
 // In development with proxy: uses relative URLs (e.g., /api/v1/...)
 // In production: uses full URL from environment variable
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? (process.env.REACT_APP_API_URL || "http://localhost:5000")
+export const API_BASE_URL = import.meta.env.MODE === 'production' 
+  ? (import.meta.env.VITE_API_URL || "http://localhost:5000")
   : "";
 export const API_VERSION = "/api/v1";
 
