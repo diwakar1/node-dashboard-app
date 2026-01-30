@@ -24,7 +24,7 @@ const Nav = () => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0gPJykZBs1LuZ6nlqACM_Mn6nub1n_cKtfA&s"
           />
           <li>
-            <Link to="/">Dashboard</Link>
+            <Link to="/dashboard">Dashboard</Link>
           </li>
           <li>
             <Link to="/products">Products</Link>
