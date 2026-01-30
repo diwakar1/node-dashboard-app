@@ -10,7 +10,9 @@ const productService = require('../services/productService');
 
 exports.addProduct = async (req, res) => {
     try {
-        const result = await productService.addProduct(req.body);
+        const userId = req.user?.user?._id || req.user?._id;
+        const payload = { ...req.body, userId };
+        const result = await productService.addProduct(payload);
         log('Product added:', result._id);
         res.send(result);
     } catch (e) {
