@@ -19,7 +19,11 @@ export async function addProduct({ name, price, category, company }) {
     method: "POST",
     body: JSON.stringify({ name, price, category, company })
   });
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || data.detail || "Failed to add product");
+  }
+  return data;
 }
 
 // Update a product
@@ -28,7 +32,11 @@ export async function updateProduct(id, { name, price, category, company }) {
     method: "PUT",
     body: JSON.stringify({ name, price, category, company })
   });
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || data.detail || "Failed to update product");
+  }
+  return data;
 }
 
 // Delete a product

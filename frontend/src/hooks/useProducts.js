@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchProducts, fetchProductById, deleteProduct as deleteProductApi, searchProducts, addProduct, updateProduct } from "../api/product";
+import { fetchProductsByCategory } from "../api/category";
 
-export function useProducts() {
+export function useProducts({ autoLoad = true } = {}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -17,7 +18,26 @@ export function useProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const loadProductsByCategory = useCallback(async (categoryId) => {
+    if (!categoryId) {
+      await loadProducts();
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchProductsByCategory(categoryId);
+      setProducts(data || []);
+    } catch (err) {
+      setError(err.message);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [loadProducts]);
 
   const removeProduct = async (id) => {
     setError(null);
@@ -90,14 +110,17 @@ export function useProducts() {
 
   // Auto-load products on mount
   useEffect(() => {
-    loadProducts();
-  }, []);
+    if (autoLoad) {
+      loadProducts();
+    }
+  }, [autoLoad, loadProducts]);
 
   return {
     products,
     loading,
     error,
     loadProducts,
+    loadProductsByCategory,
     removeProduct,
     searchProductsByKey,
     createProduct,
