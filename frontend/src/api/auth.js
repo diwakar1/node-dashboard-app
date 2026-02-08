@@ -28,6 +28,13 @@ export function clearTokens() {
 export async function authFetch(url, options = {}) {
 	let token = getAccessToken();
 	let refreshToken = getRefreshToken();
+	
+	if (!token) {
+		clearTokens();
+		window.location.href = "/login";
+		throw new Error("No access token found. Please login.");
+	}
+	
 	if (!options.headers) options.headers = {};
 	if (token) options.headers["Authorization"] = `Bearer ${token}`;
 	options.headers["Content-Type"] = "application/json";

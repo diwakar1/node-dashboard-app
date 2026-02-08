@@ -3,6 +3,12 @@
  * Handles user authentication logic: signup and login.
  * Validates input, manages password hashing, and issues JWT tokens.
  */
+
+/**
+ * @typedef {import('@dashboard/shared').User} User
+ * @typedef {import('@dashboard/shared').AuthResponse} AuthResponse
+ */
+
 const log = (...args) => console.log('[AuthController]', ...args);
 
 const { validationResult } = require('express-validator');
@@ -11,6 +17,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
 const RefreshToken = require('../models/refreshToken');
 
+/**
+ * Register a new user
+ * @param {Object} req.body - User registration data {name, email, password}
+ * @returns {Promise<{user: Omit<User, 'password'>}>}
+ */
 exports.signup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -34,6 +45,11 @@ exports.signup = async (req, res) => {
     }
 };
 
+/**
+ * Authenticate user and issue tokens
+ * @param {Object} req.body - Login credentials {email, password}
+ * @returns {Promise<AuthResponse>}
+ */
 exports.login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -18,7 +18,7 @@ export const AUTH_ENDPOINTS = {
 export const PRODUCT_ENDPOINTS = {
   GET_ALL: `${API_BASE_URL}${API_VERSION}/products`,
   GET_BY_ID: (id) => `${API_BASE_URL}${API_VERSION}/products/${id}`,
-  CREATE: `${API_BASE_URL}${API_VERSION}/products`,
+  CREATE: `${API_BASE_URL}${API_VERSION}/products/add`,
   UPDATE: (id) => `${API_BASE_URL}${API_VERSION}/products/${id}`,
   DELETE: (id) => `${API_BASE_URL}${API_VERSION}/products/${id}`,
   SEARCH: (key) => `${API_BASE_URL}${API_VERSION}/products/search/${key}`,

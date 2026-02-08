@@ -51,7 +51,6 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     clearTokens();
-    localStorage.removeItem(TOKEN_CONFIG.USER_KEY);
     setUser(null);
     setIsAuthenticated(false);
     navigate("/login");

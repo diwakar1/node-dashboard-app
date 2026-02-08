@@ -2,11 +2,21 @@
  * refreshController.js
  * Handles issuing new access tokens using refresh tokens.
  */
+
+/**
+ * @typedef {import('@dashboard/shared').User} User
+ */
+
 const userService = require('../services/userService');
 const RefreshToken = require('../models/refreshToken');
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
 
+/**
+ * Refresh access token using refresh token
+ * @param {Object} req.body - Contains refreshToken
+ * @returns {Promise<{accessToken: string}>}
+ */
 exports.refresh = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {

@@ -4,21 +4,39 @@
  * Interacts with the Product model and responds to product-related API requests.
  */
 
+/**
+ * @typedef {import('@dashboard/shared').Product} Product
+ */
+
 const log = (...args) => console.log('[ProductController]', ...args);
 
 const productService = require('../services/productService');
 
+/**
+ * Add a new product
+ * @param {Object} req.body - Product data from frontend
+ * @returns {Promise<Product>}
+ */
 exports.addProduct = async (req, res) => {
     try {
-        const result = await productService.addProduct(req.body);
+        const userId = req.user?.user?._id || req.user?._id;
+        const payload = { ...req.body, userId };
+        const result = await productService.addProduct(payload);
         log('Product added:', result._id);
         res.send(result);
     } catch (e) {
         log('Add product error:', e.message);
+        if (e.message.includes('Invalid category')) {
+            return res.status(400).send({ error: e.message });
+        }
         res.status(500).send({ error: "Failed to add product", detail: e.message });
     }
 };
 
+/**
+ * Get all products
+ * @returns {Promise<Product[]>}
+ */
 exports.getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
@@ -34,6 +52,11 @@ exports.getProducts = async (req, res) => {
     }
 };
 
+/**
+ * Delete a product by ID
+ * @param {string} req.params.id - Product ID
+ * @returns {Promise<Product>}
+ */
 exports.deleteProduct = async (req, res) => {
     try {
         const result = await productService.deleteProduct(req.params.id);
@@ -45,6 +68,11 @@ exports.deleteProduct = async (req, res) => {
     }
 };
 
+/**
+ * Get a single product by ID
+ * @param {string} req.params.id - Product ID
+ * @returns {Promise<Product>}
+ */
 exports.getProduct = async (req, res) => {
     try {
         const result = await productService.getProduct(req.params.id);
@@ -56,6 +84,12 @@ exports.getProduct = async (req, res) => {
     }
 };
 
+/**
+ * Update a product by ID
+ * @param {string} req.params.id - Product ID
+ * @param {Partial<Product>} req.body - Product fields to update
+ * @returns {Promise<Product>}
+ */
 exports.updateProduct = async (req, res) => {
     try {
         const result = await productService.updateProduct(req.params.id, req.body);
@@ -63,10 +97,18 @@ exports.updateProduct = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Update product error:', err.message);
+        if (err.message.includes('Invalid category')) {
+            return res.status(400).send({ error: err.message });
+        }
         res.status(500).send({ error: "Failed to update product" });
     }
 };
 
+/**
+ * Search products by keyword
+ * @param {string} req.params.key - Search keyword
+ * @returns {Promise<Product[]>}
+ */
 exports.searchProducts = async (req, res) => {
     try {
         const result = await productService.searchProducts(req.params.key);

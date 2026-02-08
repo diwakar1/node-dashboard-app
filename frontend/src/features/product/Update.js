@@ -2,23 +2,25 @@ import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProducts } from "../../hooks/useProducts";
 import { useForm } from "../../hooks/useForm";
+import { useCategories } from "../../hooks/useCategories";
 
 const Update = () => {
 	const params = useParams();
 	const navigate = useNavigate();
 	const { editProduct, loading, error: productError, getProductById } = useProducts();
+	const { categories, loading: categoriesLoading } = useCategories();
 
 	const { values, errors, setValues, handleChange, handleBlur, validate } = useForm({
 		initialValues: {
 			name: "",
 			price: "",
-			category: "",
+			categoryId: "",
 			company: ""
 		},
 		validationRules: {
 			name: { required: true, message: "Enter valid name" },
 			price: { required: true, message: "Enter valid price" },
-			category: { required: true, message: "Enter valid category" },
+			categoryId: { required: true, message: "Select a category" },
 			company: { required: true, message: "Enter valid company" }
 		}
 	});
@@ -33,7 +35,7 @@ const Update = () => {
 			setValues({
 				name: product.name,
 				price: product.price,
-				category: product.category,
+				categoryId: product.categoryId?._id || product.categoryId || "",
 				company: product.company
 			});
 		}
@@ -82,31 +84,37 @@ const Update = () => {
 					<span className="invalid-input">{errors.price}</span>
 				)}
 
-				<input
-					type="text"
+				<select
 					className="inputBox"
-					placeholder="Enter product category"
-					name="category"
-					value={values.category}
-					onChange={handleChange}
-					onBlur={handleBlur}
-				/>
-				{errors.category && (
-					<span className="invalid-input">{errors.category}</span>
-				)}
+				name="categoryId"
+				value={values.categoryId}
+				onChange={handleChange}
+				onBlur={handleBlur}
+				disabled={categoriesLoading}
+			>
+				<option value="">Select Category</option>
+				{categories.map((cat) => (
+					<option key={cat._id} value={cat._id}>
+						{cat.name}
+					</option>
+				))}
+			</select>
+			{errors.categoryId && (
+				<span className="invalid-input">{errors.categoryId}</span>
+			)}
 
-				<input
-					type="text"
-					className="inputBox"
-					placeholder="Enter product company"
-					name="company"
-					value={values.company}
-					onChange={handleChange}
-					onBlur={handleBlur}
-				/>
-				{errors.company && (
-					<span className="invalid-input">{errors.company}</span>
-				)}
+			<input
+				type="text"
+				className="inputBox"
+				placeholder="Enter product company"
+				name="company"
+				value={values.company}
+				onChange={handleChange}
+				onBlur={handleBlur}
+			/>
+			{errors.company && (
+				<span className="invalid-input">{errors.company}</span>
+			)}
 
 				<button
 					className="appButton"
