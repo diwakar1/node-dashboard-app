@@ -3,6 +3,11 @@
  * Defines the Product model schema for MongoDB using Mongoose.
  * Represents products in the application.
  */
+
+/**
+ * @typedef {import('@dashboard/shared').Product} Product
+ */
+
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
@@ -15,7 +20,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'categories',
         required: true

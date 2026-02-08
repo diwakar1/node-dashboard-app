@@ -47,29 +47,29 @@ function Dashboard() {
 
             {/* Overview Stats */}
             <div className="stats-overview">
-                <div className="stat-card">
+                <Link to="/products" className="stat-card">
                     <i className="fa-solid fa-box"></i>
                     <div className="stat-info">
                         <h3>{stats.overview.totalProducts}</h3>
                         <p>Total Products</p>
                     </div>
-                </div>
+                </Link>
                 
-                <div className="stat-card">
+                <Link to="/products" className="stat-card">
                     <i className="fa-solid fa-layer-group"></i>
                     <div className="stat-info">
                         <h3>{stats.overview.totalCategories}</h3>
                         <p>Categories</p>
                     </div>
-                </div>
+                </Link>
                 
-                <div className="stat-card">
+                <Link to="/products" className="stat-card">
                     <i className="fa-solid fa-building"></i>
                     <div className="stat-info">
                         <h3>{stats.overview.totalCompanies}</h3>
                         <p>Companies</p>
                     </div>
-                </div>
+                </Link>
             </div>
 
             {/* Categories Section */}
@@ -108,9 +108,9 @@ function Dashboard() {
                                     <span className="product-company">{product.company}</span>
                                 </div>
                                 <div className="product-meta">
-                                    {product.category && (
-                                        <span className="product-category" style={{ color: product.category.color }}>
-                                            <i className={product.category.icon}></i> {product.category.name}
+                                    {product.categoryId && (
+                                        <span className="product-category" style={{ color: product.categoryId.color }}>
+                                            <i className={product.categoryId.icon}></i> {product.categoryId.name}
                                         </span>
                                     )}
                                     <span className="product-price">${product.price}</span>

@@ -14,13 +14,13 @@ const Update = () => {
 		initialValues: {
 			name: "",
 			price: "",
-			category: "",
+			categoryId: "",
 			company: ""
 		},
 		validationRules: {
 			name: { required: true, message: "Enter valid name" },
 			price: { required: true, message: "Enter valid price" },
-			category: { required: true, message: "Select a category" },
+			categoryId: { required: true, message: "Select a category" },
 			company: { required: true, message: "Enter valid company" }
 		}
 	});
@@ -35,7 +35,7 @@ const Update = () => {
 			setValues({
 				name: product.name,
 				price: product.price,
-				category: product.category?._id || product.category || "",
+				categoryId: product.categoryId?._id || product.categoryId || "",
 				company: product.company
 			});
 		}
@@ -86,35 +86,35 @@ const Update = () => {
 
 				<select
 					className="inputBox"
-					name="category"
-					value={values.category}
-					onChange={handleChange}
-					onBlur={handleBlur}
-					disabled={categoriesLoading}
-				>
-					<option value="">Select Category</option>
-					{categories.map((cat) => (
-						<option key={cat._id} value={cat._id}>
-							{cat.name}
-						</option>
-					))}
-				</select>
-				{errors.category && (
-					<span className="invalid-input">{errors.category}</span>
-				)}
+				name="categoryId"
+				value={values.categoryId}
+				onChange={handleChange}
+				onBlur={handleBlur}
+				disabled={categoriesLoading}
+			>
+				<option value="">Select Category</option>
+				{categories.map((cat) => (
+					<option key={cat._id} value={cat._id}>
+						{cat.name}
+					</option>
+				))}
+			</select>
+			{errors.categoryId && (
+				<span className="invalid-input">{errors.categoryId}</span>
+			)}
 
-				<input
-					type="text"
-					className="inputBox"
-					placeholder="Enter product company"
-					name="company"
-					value={values.company}
-					onChange={handleChange}
-					onBlur={handleBlur}
-				/>
-				{errors.company && (
-					<span className="invalid-input">{errors.company}</span>
-				)}
+			<input
+				type="text"
+				className="inputBox"
+				placeholder="Enter product company"
+				name="company"
+				value={values.company}
+				onChange={handleChange}
+				onBlur={handleBlur}
+			/>
+			{errors.company && (
+				<span className="invalid-input">{errors.company}</span>
+			)}
 
 				<button
 					className="appButton"

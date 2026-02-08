@@ -1,0 +1,17 @@
+{
+  "name": "@dashboard/shared",
+  "version": "1.0.0",
+  "description": "Shared types and models for dashboard app",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": ["shared", "types", "models"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

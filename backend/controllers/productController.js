@@ -4,10 +4,19 @@
  * Interacts with the Product model and responds to product-related API requests.
  */
 
+/**
+ * @typedef {import('@dashboard/shared').Product} Product
+ */
+
 const log = (...args) => console.log('[ProductController]', ...args);
 
 const productService = require('../services/productService');
 
+/**
+ * Add a new product
+ * @param {Object} req.body - Product data from frontend
+ * @returns {Promise<Product>}
+ */
 exports.addProduct = async (req, res) => {
     try {
         const userId = req.user?.user?._id || req.user?._id;
@@ -24,6 +33,10 @@ exports.addProduct = async (req, res) => {
     }
 };
 
+/**
+ * Get all products
+ * @returns {Promise<Product[]>}
+ */
 exports.getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
@@ -39,6 +52,11 @@ exports.getProducts = async (req, res) => {
     }
 };
 
+/**
+ * Delete a product by ID
+ * @param {string} req.params.id - Product ID
+ * @returns {Promise<Product>}
+ */
 exports.deleteProduct = async (req, res) => {
     try {
         const result = await productService.deleteProduct(req.params.id);
@@ -50,6 +68,11 @@ exports.deleteProduct = async (req, res) => {
     }
 };
 
+/**
+ * Get a single product by ID
+ * @param {string} req.params.id - Product ID
+ * @returns {Promise<Product>}
+ */
 exports.getProduct = async (req, res) => {
     try {
         const result = await productService.getProduct(req.params.id);
@@ -61,6 +84,12 @@ exports.getProduct = async (req, res) => {
     }
 };
 
+/**
+ * Update a product by ID
+ * @param {string} req.params.id - Product ID
+ * @param {Partial<Product>} req.body - Product fields to update
+ * @returns {Promise<Product>}
+ */
 exports.updateProduct = async (req, res) => {
     try {
         const result = await productService.updateProduct(req.params.id, req.body);
@@ -75,6 +104,11 @@ exports.updateProduct = async (req, res) => {
     }
 };
 
+/**
+ * Search products by keyword
+ * @param {string} req.params.key - Search keyword
+ * @returns {Promise<Product[]>}
+ */
 exports.searchProducts = async (req, res) => {
     try {
         const result = await productService.searchProducts(req.params.key);

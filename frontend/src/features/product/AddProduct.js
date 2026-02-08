@@ -13,13 +13,13 @@ const AddProduct = () => {
 		initialValues: {
 			name: "",
 			price: "",
-			category: "",
+			categoryId: "",
 			company: ""
 		},
 		validationRules: {
 			name: { required: true, message: "Enter valid name" },
 			price: { required: true, message: "Enter valid price" },
-			category: { required: true, message: "Select a category" },
+			categoryId: { required: true, message: "Select a category" },
 			company: { required: true, message: "Enter valid company" }
 		}
 	});
@@ -66,22 +66,20 @@ const AddProduct = () => {
 
 			<select
 				className="inputBox"
-				name="category"
-				value={values.category}
-				onChange={handleChange}
-				onBlur={handleBlur}
-				disabled={categoriesLoading}
-			>
-				<option value="">Select Category</option>
-				{categories.map((cat) => (
-					<option key={cat._id} value={cat._id}>
-						{cat.name}
-					</option>
-				))}
-			</select>
-			{errors.category && <span className="invalid-input">{errors.category}</span>}
-
-			<input
+			name="categoryId"
+			value={values.categoryId}
+			onChange={handleChange}
+			onBlur={handleBlur}
+			disabled={categoriesLoading}
+		>
+			<option value="">Select Category</option>
+			{categories.map((cat) => (
+				<option key={cat._id} value={cat._id}>
+					{cat.name}
+				</option>
+			))}
+		</select>
+		{errors.categoryId && <span className="invalid-input">{errors.categoryId}</span>}
 				type="text"
 				className="inputBox"
 				placeholder="Enter product company"

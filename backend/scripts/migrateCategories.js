@@ -54,7 +54,7 @@ async function migrateCategories() {
             if (typeof product.category === 'string' && categoryMap[product.category]) {
                 await Product.findByIdAndUpdate(
                     product._id,
-                    { category: categoryMap[product.category] }
+                    { categoryId: categoryMap[product.category] }
                 );
                 updated++;
             }

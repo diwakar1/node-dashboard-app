@@ -39,11 +39,14 @@
     align-items: center;
     gap: 15px;
     transition: transform 0.2s;
+    text-decoration: none;
+    color: inherit;
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
 .stat-card i {
@@ -108,6 +111,7 @@
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .category-card:hover {

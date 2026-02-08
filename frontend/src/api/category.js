@@ -5,7 +5,13 @@
 import { authFetch, API_BASE_URL } from './auth';
 
 /**
+ * @typedef {import('@dashboard/shared').Category} Category
+ * @typedef {import('@dashboard/shared').DashboardStats} DashboardStats
+ */
+
+/**
  * Get all categories
+ * @returns {Promise<Category[]>}
  */
 export async function fetchCategories() {
     const response = await fetch(`${API_BASE_URL}/api/v1/categories`);
@@ -17,6 +23,8 @@ export async function fetchCategories() {
 
 /**
  * Get single category by ID
+ * @param {string} id - Category ID
+ * @returns {Promise<Category>}
  */
 export async function fetchCategoryById(id) {
     const response = await fetch(`${API_BASE_URL}/api/v1/categories/${id}`);
@@ -28,6 +36,8 @@ export async function fetchCategoryById(id) {
 
 /**
  * Get products by category
+ * @param {string} categoryId - Category ID
+ * @returns {Promise<any[]>}
  */
 export async function fetchProductsByCategory(categoryId) {
     const response = await fetch(`${API_BASE_URL}/api/v1/categories/${categoryId}/products`);
@@ -40,6 +50,8 @@ export async function fetchProductsByCategory(categoryId) {
 
 /**
  * Create new category (requires auth)
+ * @param {Category} categoryData - Category data (name required, description/icon/color optional)
+ * @returns {Promise<Category>}
  */
 export async function createCategory(categoryData) {
     const response = await authFetch(`${API_BASE_URL}/api/v1/categories`, {
@@ -57,6 +69,9 @@ export async function createCategory(categoryData) {
 
 /**
  * Update category (requires auth)
+ * @param {string} id - Category ID
+ * @param {Category} categoryData - Updated category data (can include _id)
+ * @returns {Promise<Category>}
  */
 export async function updateCategory(id, categoryData) {
     const response = await authFetch(`${API_BASE_URL}/api/v1/categories/${id}`, {

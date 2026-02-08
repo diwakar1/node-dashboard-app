@@ -2,15 +2,21 @@
  * categoryService.js
  * Business logic for category operations
  */
-const Category = require('../models/Category');
-const Product = require('../models/Product');
+
+/**
+ * @typedef {import('@dashboard/shared').Category} Category
+ */
+
+const CategoryModel = require('../models/Category');
+const ProductModel = require('../models/Product');
 
 /**
  * Get all categories
+ * @returns {Promise<Category[]>}
  */
 async function getAllCategories() {
     try {
-        const categories = await Category.find().sort({ name: 1 });
+        const categories = await CategoryModel.find().sort({ name: 1 });
         return categories;
     } catch (error) {
         throw new Error('Failed to fetch categories: ' + error.message);
@@ -19,10 +25,12 @@ async function getAllCategories() {
 
 /**
  * Get category by ID
+ * @param {string} categoryId - Category ID
+ * @returns {Promise<Category>}
  */
 async function getCategoryById(categoryId) {
     try {
-        const category = await Category.findById(categoryId);
+        const category = await CategoryModel.findById(categoryId);
         if (!category) {
             throw new Error('Category not found');
         }
@@ -34,15 +42,17 @@ async function getCategoryById(categoryId) {
 
 /**
  * Create new category
+ * @param {Category} categoryData - Category data
+ * @returns {Promise<Category>}
  */
 async function createCategory(categoryData) {
     try {
-        const existingCategory = await Category.findOne({ name: categoryData.name });
+        const existingCategory = await CategoryModel.findOne({ name: categoryData.name });
         if (existingCategory) {
             throw new Error('Category with this name already exists');
         }
 
-        const category = new Category(categoryData);
+        const category = new CategoryModel(categoryData);
         await category.save();
         return category;
     } catch (error) {
@@ -52,10 +62,13 @@ async function createCategory(categoryData) {
 
 /**
  * Update category
+ * @param {string} categoryId - Category ID
+ * @param {Category} updateData - Updated category data
+ * @returns {Promise<Category>}
  */
 async function updateCategory(categoryId, updateData) {
     try {
-        const category = await Category.findByIdAndUpdate(
+        const category = await CategoryModel.findByIdAndUpdate(
             categoryId,
             updateData,
             { new: true, runValidators: true }
@@ -77,12 +90,12 @@ async function updateCategory(categoryId, updateData) {
 async function deleteCategory(categoryId) {
     try {
         // Check if any products use this category
-        const productsCount = await Product.countDocuments({ category: categoryId });
+        const productsCount = await ProductModel.countDocuments({ categoryId: categoryId });
         if (productsCount > 0) {
             throw new Error(`Cannot delete category. ${productsCount} product(s) are using this category`);
         }
 
-        const category = await Category.findByIdAndDelete(categoryId);
+        const category = await CategoryModel.findByIdAndDelete(categoryId);
         if (!category) {
             throw new Error('Category not found');
         }
@@ -98,13 +111,13 @@ async function deleteCategory(categoryId) {
  */
 async function getProductsByCategory(categoryId) {
     try {
-        const category = await Category.findById(categoryId);
+        const category = await CategoryModel.findById(categoryId);
         if (!category) {
             throw new Error('Category not found');
         }
 
-        const products = await Product.find({ category: categoryId })
-            .populate('category', 'name icon color');
+        const products = await ProductModel.find({ categoryId: categoryId })
+            .populate('categoryId', 'name icon color');
 
         return {
             category,
@@ -121,7 +134,7 @@ async function getProductsByCategory(categoryId) {
  */
 async function getCategoryStats() {
     try {
-        const stats = await Product.aggregate([
+        const stats = await ProductModel.aggregate([
             {
                 $group: {
                     _id: '$category',

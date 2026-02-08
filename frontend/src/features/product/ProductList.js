@@ -45,10 +45,10 @@ const ProductList = () => {
 						<li>{product.name}</li>
 						<li>{product.price}</li>
 						<li>
-							{product.category ? (
+							{product.categoryId ? (
 								<span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-									<i className={product.category.icon} style={{ color: product.category.color }}></i>
-									{product.category.name}
+									<i className={product.categoryId.icon} style={{ color: product.categoryId.color }}></i>
+									{product.categoryId.name}
 								</span>
 							) : 'N/A'}
 						</li>

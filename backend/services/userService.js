@@ -3,17 +3,32 @@
  * Contains business logic for user operations (registration, login, password hashing, JWT).
  */
 
-const User = require('../models/User');
+/**
+ * @typedef {import('@dashboard/shared').User} User
+ * @typedef {import('@dashboard/shared').AuthResponse} AuthResponse
+ */
+
+const UserModel = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+/**
+ * Find user by email
+ * @param {string} email
+ * @returns {Promise<User|null>}
+ */
 exports.findUserByEmail = async (email) => {
-    return await User.findOne({ email });
+    return await UserModel.findOne({ email });
 };
 
+/**
+ * Create a new user with hashed password
+ * @param {User} userData - User registration data
+ * @returns {Promise<User>}
+ */
 exports.createUser = async (userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const user = new User({
+    const user = new UserModel({
         name: userData.name,
         email: userData.email,
         password: hashedPassword,

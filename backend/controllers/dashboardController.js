@@ -2,30 +2,36 @@
  * dashboardController.js
  * Handles dashboard statistics and overview data
  */
-const Product = require('../models/Product');
-const Category = require('../models/Category');
-const User = require('../models/User');
+
+/**
+ * @typedef {import('@dashboard/shared').Product} Product
+ * @typedef {import('@dashboard/shared').Category} Category
+ * @typedef {import('@dashboard/shared').User} User
+ */
+
+const ProductModel = require('../models/Product');
+const CategoryModel = require('../models/Category');
+const UserModel = require('../models/User');
 
 /**
  * Get dashboard statistics
  * GET /api/v1/dashboard/stats
+ * @returns {Promise<Object>} Dashboard statistics object
  */
 async function getDashboardStats(req, res) {
     try {
         // Get total counts
-        const totalProducts = await Product.countDocuments();
-        const totalCategories = await Category.countDocuments();
-        const totalUsers = await User.countDocuments();
-
+        const totalProducts = await ProductModel.countDocuments();
+        
         // Get unique companies count
-        const companies = await Product.distinct('company');
+        const companies = await ProductModel.distinct('company');
         const totalCompanies = companies.length;
 
         // Get products by category
-        const productsByCategory = await Product.aggregate([
+        const productsByCategory = await ProductModel.aggregate([
             {
                 $group: {
-                    _id: '$category',
+                    _id: '$categoryId',
                     count: { $sum: 1 }
                 }
             },
@@ -56,8 +62,8 @@ async function getDashboardStats(req, res) {
         ]);
 
         // Get recent products (last 5)
-        const recentProducts = await Product.find()
-            .populate('category', 'name icon color')
+        const recentProducts = await ProductModel.find()
+            .populate('categoryId', 'name icon color')
             .sort({ createdAt: -1 })
             .limit(5);
 
@@ -65,9 +71,8 @@ async function getDashboardStats(req, res) {
         const stats = {
             overview: {
                 totalProducts,
-                totalCategories,
-                totalCompanies,
-                totalUsers
+                totalCategories: productsByCategory.length, // Count only categories with products
+                totalCompanies
             },
             categoryBreakdown: productsByCategory,
             recentProducts

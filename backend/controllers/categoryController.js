@@ -2,11 +2,17 @@
  * categoryController.js
  * Handles HTTP requests for category operations
  */
+
+/**
+ * @typedef {import('@dashboard/shared').Category} Category
+ */
+
 const categoryService = require('../services/categoryService');
 
 /**
  * Get all categories
  * GET /api/v1/categories
+ * @returns {Promise<Category[]>}
  */
 async function getCategories(req, res) {
     try {
@@ -20,6 +26,7 @@ async function getCategories(req, res) {
 /**
  * Get single category by ID
  * GET /api/v1/categories/:id
+ * @returns {Promise<Category>}
  */
 async function getCategory(req, res) {
     try {
@@ -36,6 +43,8 @@ async function getCategory(req, res) {
 /**
  * Create new category
  * POST /api/v1/categories
+ * @param {Category} req.body - Category data
+ * @returns {Promise<Category>}
  */
 async function createCategory(req, res) {
     try {
@@ -52,6 +61,9 @@ async function createCategory(req, res) {
 /**
  * Update category
  * PUT /api/v1/categories/:id
+ * @param {string} req.params.id - Category ID
+ * @param {Partial<Category>} req.body - Category fields to update
+ * @returns {Promise<Category>}
  */
 async function updateCategory(req, res) {
     try {
@@ -68,6 +80,8 @@ async function updateCategory(req, res) {
 /**
  * Delete category
  * DELETE /api/v1/categories/:id
+ * @param {string} req.params.id - Category ID
+ * @returns {Promise<void>}
  */
 async function deleteCategory(req, res) {
     try {
@@ -87,6 +101,8 @@ async function deleteCategory(req, res) {
 /**
  * Get products by category
  * GET /api/v1/categories/:id/products
+ * @param {string} req.params.id - Category ID
+ * @returns {Promise<{category: Category, products: Product[]}>}
  */
 async function getCategoryProducts(req, res) {
     try {
@@ -103,6 +119,7 @@ async function getCategoryProducts(req, res) {
 /**
  * Get category statistics
  * GET /api/v1/categories/stats
+ * @returns {Promise<Array<{_id: string, name: string, productCount: number}>>}
  */
 async function getCategoryStats(req, res) {
     try {
