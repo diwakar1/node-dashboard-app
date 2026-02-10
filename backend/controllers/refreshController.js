@@ -3,10 +3,6 @@
  * Handles issuing new access tokens using refresh tokens.
  */
 
-/**
- * @typedef {import('@dashboard/shared').User} User
- */
-
 const userService = require('../services/userService');
 const RefreshToken = require('../models/refreshToken');
 const JWT_SECRET = process.env.JWT_SECRET;

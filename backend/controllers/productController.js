@@ -4,13 +4,13 @@
  * Interacts with the Product model and responds to product-related API requests.
  */
 
-/**
- * @typedef {import('@dashboard/shared').Product} Product
- */
-
 const log = (...args) => console.log('[ProductController]', ...args);
 
 const productService = require('../services/productService');
+
+/**
+ * @typedef {import('../models/Product')} Product
+ */
 
 /**
  * Add a new product
@@ -87,7 +87,7 @@ exports.getProduct = async (req, res) => {
 /**
  * Update a product by ID
  * @param {string} req.params.id - Product ID
- * @param {Partial<Product>} req.body - Product fields to update
+ * @param {Object} req.body - Product fields to update
  * @returns {Promise<Product>}
  */
 exports.updateProduct = async (req, res) => {

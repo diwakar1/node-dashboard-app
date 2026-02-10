@@ -3,11 +3,11 @@
  * Handles HTTP requests for category operations
  */
 
-/**
- * @typedef {import('@dashboard/shared').Category} Category
- */
-
 const categoryService = require('../services/categoryService');
+
+/**
+ * @typedef {import('../models/Category')} Category
+ */
 
 /**
  * Get all categories
@@ -43,7 +43,7 @@ async function getCategory(req, res) {
 /**
  * Create new category
  * POST /api/v1/categories
- * @param {Category} req.body - Category data
+ * @param {Object} req.body - Category data
  * @returns {Promise<Category>}
  */
 async function createCategory(req, res) {
@@ -62,7 +62,7 @@ async function createCategory(req, res) {
  * Update category
  * PUT /api/v1/categories/:id
  * @param {string} req.params.id - Category ID
- * @param {Partial<Category>} req.body - Category fields to update
+ * @param {Object} req.body - Category fields to update
  * @returns {Promise<Category>}
  */
 async function updateCategory(req, res) {

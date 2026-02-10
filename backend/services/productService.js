@@ -3,17 +3,17 @@
  * Contains business logic for product operations (CRUD, search).
  */
 
-/**
- * @typedef {import('@dashboard/shared').Product} Product
- */
-
-const ProductModel = require('../models/Product');
+const Product = require('../models/Product');
 const Category = require('../models/Category');
 
 /**
+ * @typedef {import('../models/Product')} Product
+ */
+
+/**
  * Add a new product
- * @param {Product} productData - Product data from frontend
- * @returns {Promise<Product>} Created product with generated fields
+ * @param {Object} productData - Product data from frontend
+ * @returns {Promise<any>} Created product with generated fields
  */
 exports.addProduct = async (productData) => {
     // Validate category exists
@@ -24,7 +24,7 @@ exports.addProduct = async (productData) => {
         }
     }
     
-    const product = new ProductModel(productData);
+    const product = new Product(productData);
     return await product.save();
 };
 
@@ -33,7 +33,7 @@ exports.addProduct = async (productData) => {
  * @returns {Promise<Product[]>} Array of products
  */
 exports.getProducts = async () => {
-    return await ProductModel.find().populate('categoryId', 'name icon color');
+    return await Product.find().populate('categoryId', 'name icon color');
 };
 
 /**
@@ -42,7 +42,7 @@ exports.getProducts = async () => {
  * @returns {Promise<Object>} Delete result
  */
 exports.deleteProduct = async (id) => {
-    return await ProductModel.deleteOne({ _id: id });
+    return await Product.deleteOne({ _id: id });
 };
 
 /**
@@ -51,14 +51,14 @@ exports.deleteProduct = async (id) => {
  * @returns {Promise<Product>} Product with populated category
  */
 exports.getProduct = async (id) => {
-    return await ProductModel.findOne({ _id: id }).populate('categoryId', 'name icon color');
+    return await Product.findOne({ _id: id }).populate('categoryId', 'name icon color');
 };
 
 /**
  * Update a product
  * @param {string} id - Product ID
- * @param {Product} updateData - Updated product data
- * @returns {Promise<Object>} Update result
+ * @param {Object} updateData - Updated product data
+ * @returns {Promise<{acknowledged: boolean, modifiedCount: number, upsertedId: null, upsertedCount: number, matchedCount: number}>} Update result
  */
 exports.updateProduct = async (id, updateData) => {
     // Validate category exists if provided
@@ -69,7 +69,7 @@ exports.updateProduct = async (id, updateData) => {
         }
     }
     
-    return await ProductModel.updateOne({ _id: id }, { $set: updateData });
+    return await Product.updateOne({ _id: id }, { $set: updateData });
 };
 
 /**
@@ -79,7 +79,7 @@ exports.updateProduct = async (id, updateData) => {
  */
 exports.searchProducts = async (key) => {
     // Search in product fields and populated category name
-    const products = await ProductModel.find().populate('categoryId', 'name icon color');
+    const products = await Product.find().populate('categoryId', 'name icon color');
     
     return products.filter(product => {
         const searchKey = key.toLowerCase();

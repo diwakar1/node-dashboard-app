@@ -4,10 +4,6 @@
  * Represents products in the application.
  */
 
-/**
- * @typedef {import('@dashboard/shared').Product} Product
- */
-
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({

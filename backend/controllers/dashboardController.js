@@ -3,32 +3,32 @@
  * Handles dashboard statistics and overview data
  */
 
-/**
- * @typedef {import('@dashboard/shared').Product} Product
- * @typedef {import('@dashboard/shared').Category} Category
- * @typedef {import('@dashboard/shared').User} User
- */
+const Product = require('../models/Product');
+const Category = require('../models/Category');
+const User = require('../models/User');
 
-const ProductModel = require('../models/Product');
-const CategoryModel = require('../models/Category');
-const UserModel = require('../models/User');
+/**
+ * @typedef {import('../models/Product')} Product
+ * @typedef {import('../models/Category')} Category
+ * @typedef {import('../models/User')} User
+ */
 
 /**
  * Get dashboard statistics
  * GET /api/v1/dashboard/stats
- * @returns {Promise<Object>} Dashboard statistics object
+ * @returns {Promise<{totalProducts: number, totalCompanies: number, productsByCategory: Array, recentProducts: Product[]}>} Dashboard statistics object
  */
 async function getDashboardStats(req, res) {
     try {
         // Get total counts
-        const totalProducts = await ProductModel.countDocuments();
+        const totalProducts = await Product.countDocuments();
         
         // Get unique companies count
-        const companies = await ProductModel.distinct('company');
+        const companies = await Product.distinct('company');
         const totalCompanies = companies.length;
 
         // Get products by category
-        const productsByCategory = await ProductModel.aggregate([
+        const productsByCategory = await Product.aggregate([
             {
                 $group: {
                     _id: '$categoryId',
@@ -62,7 +62,7 @@ async function getDashboardStats(req, res) {
         ]);
 
         // Get recent products (last 5)
-        const recentProducts = await ProductModel.find()
+        const recentProducts = await Product.find()
             .populate('categoryId', 'name icon color')
             .sort({ createdAt: -1 })
             .limit(5);
