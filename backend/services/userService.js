@@ -46,12 +46,22 @@ export const hashPassword = async (plain) => {
 
 // Generate access token (short-lived)
 export const generateAccessToken = (user, secret) => {
-    return jwt.sign({ user }, secret, { expiresIn: "30m" });
+    // Store only essential data in token payload
+    const payload = {
+        userId: user._id,
+        email: user.email
+    };
+    return jwt.sign(payload, secret, { expiresIn: "30m" });
 };
 
 // Generate refresh token (longer-lived)
 export const generateRefreshToken = (user, refreshSecret) => {
-    return jwt.sign({ user }, refreshSecret, { expiresIn: "7d" });
+    // Store only essential data in token payload
+    const payload = {
+        userId: user._id,
+        email: user.email
+    };
+    return jwt.sign(payload, refreshSecret, { expiresIn: "7d" });
 };
 
 // Verify refresh token

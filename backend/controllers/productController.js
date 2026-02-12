@@ -26,7 +26,8 @@ export const addProduct = async (req, res) => {
     }
     
     try {
-        const userId = req.user?.user?._id || req.user?._id;
+        // req.user now contains { userId, email } from token
+        const userId = req.user.userId;
         const payload = { ...req.body, userId };
         const result = await productService.addProduct(payload);
         log('Product added:', result._id);

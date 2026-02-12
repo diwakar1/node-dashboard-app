@@ -30,7 +30,7 @@ export const refresh = async (req, res) => {
     return res.status(403).json({ error: 'Invalid refresh token' });
   }
   // Issue new access token
-  const user = payload.user;
-  const accessToken = userService.generateAccessToken(user, JWT_SECRET);
+  // Payload now contains userId and email directly
+  const accessToken = userService.generateAccessToken(payload, JWT_SECRET);
   res.json({ accessToken });
 };
