@@ -3,10 +3,12 @@
  * Defines the User model schema for MongoDB using Mongoose.
  * Represents application users.
  */
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
+
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String
 });
-module.exports = mongoose.model("users", userSchema);
+
+export default mongoose.model("users", userSchema);

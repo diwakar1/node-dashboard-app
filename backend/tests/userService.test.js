@@ -3,10 +3,10 @@
  * Unit tests for userService using Jest.
  */
 
-const userService = require('../services/userService');
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import * as userService from '../services/userService.js';
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 jest.mock('../models/User');
 jest.mock('bcryptjs');

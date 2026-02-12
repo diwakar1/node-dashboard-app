@@ -3,10 +3,10 @@
  * Unit tests for authController using Jest and supertest.
  */
 
-const request = require('supertest');
-const express = require('express');
-const bodyParser = require('body-parser');
-const authRoutes = require('../routes/auth');
+import request from 'supertest';
+import express from 'express';
+import bodyParser from 'body-parser';
+import authRoutes from '../routes/auth.js';
 
 const app = express();
 app.use(bodyParser.json());

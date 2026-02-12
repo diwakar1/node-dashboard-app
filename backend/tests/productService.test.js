@@ -3,8 +3,8 @@
  * Unit tests for productService using Jest.
  */
 
-const productService = require('../services/productService');
-const Product = require('../models/Product');
+import * as productService from '../services/productService.js';
+import Product from '../models/Product.js';
 
 jest.mock('../models/Product');
 

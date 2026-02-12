@@ -4,9 +4,11 @@
  * 
  * Run this once: node scripts/renameCategoryField.js
  */
-require('dotenv').config();
-const mongoose = require('mongoose');
-require('../db/config');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import mongoose from 'mongoose';
+import '../db/config.js';
 
 async function renameCategoryField() {
     try {

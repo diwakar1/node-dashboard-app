@@ -3,9 +3,9 @@
  * Contains business logic for user operations (registration, login, password hashing, JWT).
  */
 
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 /**
  * @typedef {import('../models/User')} User
@@ -16,7 +16,7 @@ const jwt = require('jsonwebtoken');
  * @param {string} email
  * @returns {Promise<any>}
  */
-exports.findUserByEmail = async (email) => {
+export const findUserByEmail = async (email) => {
     return await User.findOne({ email });
 };
 
@@ -25,7 +25,7 @@ exports.findUserByEmail = async (email) => {
  * @param {Object} userData - User registration data
  * @returns {Promise<User>}
  */
-exports.createUser = async (userData) => {
+export const createUser = async (userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = new User({
         name: userData.name,
@@ -35,27 +35,27 @@ exports.createUser = async (userData) => {
     return await user.save();
 };
 
-exports.comparePassword = async (plain, hash) => {
+export const comparePassword = async (plain, hash) => {
     return await bcrypt.compare(plain, hash);
 };
 
-exports.hashPassword = async (plain) => {
+export const hashPassword = async (plain) => {
     return await bcrypt.hash(plain, 10);
 };
 
 
 // Generate access token (short-lived)
-exports.generateAccessToken = (user, secret) => {
+export const generateAccessToken = (user, secret) => {
     return jwt.sign({ user }, secret, { expiresIn: "30m" });
 };
 
 // Generate refresh token (longer-lived)
-exports.generateRefreshToken = (user, refreshSecret) => {
+export const generateRefreshToken = (user, refreshSecret) => {
     return jwt.sign({ user }, refreshSecret, { expiresIn: "7d" });
 };
 
 // Verify refresh token
-exports.verifyRefreshToken = (token, refreshSecret) => {
+export const verifyRefreshToken = (token, refreshSecret) => {
     try {
         return jwt.verify(token, refreshSecret);
     } catch (err) {

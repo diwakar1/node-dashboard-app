@@ -5,10 +5,12 @@
  * 
  * Run this once: node scripts/migrateCategories.js
  */
-require('dotenv').config();
-require('../db/config');
-const Product = require('../models/Product');
-const Category = require('../models/Category');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import '../db/config.js';
+import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
 async function migrateCategories() {
     try {

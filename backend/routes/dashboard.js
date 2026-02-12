@@ -2,10 +2,11 @@
  * dashboard.js
  * Dashboard routes for statistics and overview
  */
-const express = require('express');
+import express from 'express';
+import { getDashboardStats } from '../controllers/dashboardController.js';
+import verifyToken from '../middleware/verifyToken.js';
+
 const router = express.Router();
-const dashboardController = require('../controllers/dashboardController');
-const verifyToken = require('../middleware/verifyToken');
 
 /**
  * @swagger
@@ -19,6 +20,6 @@ const verifyToken = require('../middleware/verifyToken');
  *       200:
  *         description: Dashboard statistics including product counts, categories, and recent products
  */
-router.get('/stats', verifyToken, dashboardController.getDashboardStats);
+router.get('/stats', verifyToken, getDashboardStats);
 
-module.exports = router;
+export default router;

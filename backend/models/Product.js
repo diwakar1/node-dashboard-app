@@ -4,7 +4,7 @@
  * Represents products in the application.
  */
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
     name: {
@@ -34,4 +34,4 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model("products", productSchema);
+export default mongoose.model("products", productSchema);

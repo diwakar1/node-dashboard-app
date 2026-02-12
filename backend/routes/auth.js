@@ -6,10 +6,11 @@
  * Swagger annotations below document the API endpoints for automatic generation of OpenAPI docs.
  * See /api-docs for live documentation.
  */
-const express = require('express');
+import express from 'express';
+import * as authController from '../controllers/authController.js';
+import { registrationValidation, loginValidation } from '../middleware/validation.js';
+
 const router = express.Router();
-const authController = require('../controllers/authController');
-const { registrationValidation, loginValidation } = require('../middleware/validation');
 
 /**
  * @swagger
@@ -124,4 +125,4 @@ router.post('/login', loginValidation, authController.login);
  *         description: Invalid or expired refresh token
  */
 
-module.exports = router;
+export default router;

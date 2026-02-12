@@ -6,11 +6,12 @@
 
 const log = (...args) => console.log('[AuthController]', ...args);
 
-const { validationResult } = require('express-validator');
-const userService = require('../services/userService');
+import { validationResult } from 'express-validator';
+import * as userService from '../services/userService.js';
+import RefreshToken from '../models/refreshToken.js';
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
-const RefreshToken = require('../models/refreshToken');
 
 /**
  * @typedef {import('../models/User')} User
@@ -21,7 +22,7 @@ const RefreshToken = require('../models/refreshToken');
  * @param {Object} req.body - User registration data {name, email, password}
  * @returns {Promise<{user: User}>} User object without password
  */
-exports.signup = async (req, res) => {
+export const signup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         log('Signup validation failed:', errors.array());
@@ -49,7 +50,7 @@ exports.signup = async (req, res) => {
  * @param {Object} req.body - Login credentials {email, password}
  * @returns {Promise<{user: User, accessToken: string, refreshToken: string}>} User with access and refresh tokens
  */
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         log('Login validation failed:', errors.array());

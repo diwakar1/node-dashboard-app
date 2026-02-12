@@ -6,7 +6,7 @@
 
 const log = (...args) => console.log('[ProductController]', ...args);
 
-const productService = require('../services/productService');
+import * as productService from '../services/productService.js';
 
 /**
  * @typedef {import('../models/Product')} Product
@@ -17,7 +17,7 @@ const productService = require('../services/productService');
  * @param {Object} req.body - Product data from frontend
  * @returns {Promise<Product>}
  */
-exports.addProduct = async (req, res) => {
+export const addProduct = async (req, res) => {
     try {
         const userId = req.user?.user?._id || req.user?._id;
         const payload = { ...req.body, userId };
@@ -37,7 +37,7 @@ exports.addProduct = async (req, res) => {
  * Get all products
  * @returns {Promise<Product[]>}
  */
-exports.getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
         log('Fetched products:', products.length);
@@ -57,7 +57,7 @@ exports.getProducts = async (req, res) => {
  * @param {string} req.params.id - Product ID
  * @returns {Promise<Product>}
  */
-exports.deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
     try {
         const result = await productService.deleteProduct(req.params.id);
         log('Product deleted:', req.params.id);
@@ -73,7 +73,7 @@ exports.deleteProduct = async (req, res) => {
  * @param {string} req.params.id - Product ID
  * @returns {Promise<Product>}
  */
-exports.getProduct = async (req, res) => {
+export const getProduct = async (req, res) => {
     try {
         const result = await productService.getProduct(req.params.id);
         log('Fetched product:', req.params.id);
@@ -90,7 +90,7 @@ exports.getProduct = async (req, res) => {
  * @param {Object} req.body - Product fields to update
  * @returns {Promise<Product>}
  */
-exports.updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
     try {
         const result = await productService.updateProduct(req.params.id, req.body);
         log('Product updated:', req.params.id);
@@ -109,7 +109,7 @@ exports.updateProduct = async (req, res) => {
  * @param {string} req.params.key - Search keyword
  * @returns {Promise<Product[]>}
  */
-exports.searchProducts = async (req, res) => {
+export const searchProducts = async (req, res) => {
     try {
         const result = await productService.searchProducts(req.params.key);
         log('Product search:', req.params.key, 'Results:', result.length);

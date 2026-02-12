@@ -3,8 +3,9 @@
  * Handles issuing new access tokens using refresh tokens.
  */
 
-const userService = require('../services/userService');
-const RefreshToken = require('../models/refreshToken');
+import * as userService from '../services/userService.js';
+import RefreshToken from '../models/refreshToken.js';
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
 
@@ -13,7 +14,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET;
  * @param {Object} req.body - Contains refreshToken
  * @returns {Promise<{accessToken: string}>}
  */
-exports.refresh = async (req, res) => {
+export const refresh = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
     return res.status(400).json({ error: 'Refresh token required' });

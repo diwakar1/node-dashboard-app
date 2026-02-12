@@ -2,10 +2,11 @@
  * refresh.js
  * Route for refreshing access tokens using a refresh token.
  */
-const express = require('express');
+import express from 'express';
+import { refresh } from '../controllers/refreshController.js';
+
 const router = express.Router();
-const refreshController = require('../controllers/refreshController');
 
-router.post('/', refreshController.refresh);
+router.post('/', refresh);
 
-module.exports = router;
+export default router;

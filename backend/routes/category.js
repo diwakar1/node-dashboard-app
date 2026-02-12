@@ -2,10 +2,11 @@
  * category.js
  * Category routes with authentication middleware
  */
-const express = require('express');
+import express from 'express';
+import * as categoryController from '../controllers/categoryController.js';
+import verifyToken from '../middleware/verifyToken.js';
+
 const router = express.Router();
-const categoryController = require('../controllers/categoryController');
-const verifyToken = require('../middleware/verifyToken');
 
 /**
  * @swagger
@@ -154,4 +155,4 @@ router.put('/:id', verifyToken, categoryController.updateCategory);
  */
 router.delete('/:id', verifyToken, categoryController.deleteCategory);
 
-module.exports = router;
+export default router;

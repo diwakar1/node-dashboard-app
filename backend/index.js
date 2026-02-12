@@ -5,13 +5,28 @@
  * Swagger UI integration
  */
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const express = require("express");
-require("./db/config");
-const cors = require("cors");
-const logger = require("./middleware/logger");
-const path = require("path");
+import express from 'express';
+import './db/config.js';
+import cors from 'cors';
+import logger from './middleware/logger.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
+
+// Import routes
+import authRoutes from './routes/auth.js';
+import productRoutes from './routes/product.js';
+import refreshRoutes from './routes/refresh.js';
+import categoryRoutes from './routes/category.js';
+import dashboardRoutes from './routes/dashboard.js';
+
+// Get __dirname equivalent in ES6 modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const app = express();
@@ -28,16 +43,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Swagger UI integration
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./config/swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Import routes
-const authRoutes = require("./routes/auth");
-const productRoutes = require("./routes/product");
-const refreshRoutes = require("./routes/refresh");
-const categoryRoutes = require("./routes/category");
-const dashboardRoutes = require("./routes/dashboard");
 
 // Mount versioned routes
 app.use("/api/v1/auth", authRoutes);

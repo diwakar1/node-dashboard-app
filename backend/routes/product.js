@@ -6,12 +6,12 @@
  * Swagger annotations below document the API endpoints for automatic generation of OpenAPI docs.
  * See /api-docs for live documentation.
  */
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import * as productController from '../controllers/productController.js';
+import verifyToken from '../middleware/verifyToken.js';
+import { productValidation } from '../middleware/productValidation.js';
 
-const productController = require('../controllers/productController');
-const verifyToken = require('../middleware/verifyToken');
-const { productValidation } = require('../middleware/productValidation');
+const router = express.Router();
 
 /**
  * @swagger
@@ -171,4 +171,4 @@ router.delete('/:id', verifyToken, productController.deleteProduct);
  */
 router.get('/search/:key', verifyToken, productController.searchProducts);
 
-module.exports = router;
+export default router;

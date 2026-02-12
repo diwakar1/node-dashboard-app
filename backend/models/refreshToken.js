@@ -2,7 +2,7 @@
  * refreshToken.js
  * Mongoose model for storing refresh tokens (optional, for token revocation/invalidation).
  */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const refreshTokenSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
@@ -10,4 +10,4 @@ const refreshTokenSchema = new mongoose.Schema({
   expiresAt: { type: Date, required: true },
 });
 
-module.exports = mongoose.model('refresh_tokens', refreshTokenSchema);
+export default mongoose.model('refresh_tokens', refreshTokenSchema);

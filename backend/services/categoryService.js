@@ -3,8 +3,8 @@
  * Business logic for category operations
  */
 
-const Category = require('../models/Category');
-const Product = require('../models/Product');
+import Category from '../models/Category.js';
+import Product from '../models/Product.js';
 
 /**
  * @typedef {import('../models/Category')} Category
@@ -173,7 +173,7 @@ async function getCategoryStats() {
     }
 }
 
-module.exports = {
+export {
     getAllCategories,
     getCategoryById,
     createCategory,

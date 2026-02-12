@@ -3,7 +3,7 @@
  * Contains express-validator middleware for validating product requests (add, update).
  */
 
-const { body } = require('express-validator');
+import { body } from 'express-validator';
 
 const productValidation = [
     body('name').notEmpty().withMessage('Product name is required').trim(),
@@ -12,6 +12,6 @@ const productValidation = [
     body('company').notEmpty().withMessage('Company is required').trim(), 
 ];
 
-module.exports = {
+export {
     productValidation
 };

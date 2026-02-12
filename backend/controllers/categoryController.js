@@ -3,7 +3,7 @@
  * Handles HTTP requests for category operations
  */
 
-const categoryService = require('../services/categoryService');
+import * as categoryService from '../services/categoryService.js';
 
 /**
  * @typedef {import('../models/Category')} Category
@@ -130,7 +130,7 @@ async function getCategoryStats(req, res) {
     }
 }
 
-module.exports = {
+export {
     getCategories,
     getCategory,
     createCategory,

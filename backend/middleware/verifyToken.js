@@ -3,10 +3,11 @@
  * Express middleware to authenticate requests using JWT tokens.
  * Protects routes by verifying the Authorization header and decoding the token.
  */
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+
 const jwtKey = process.env.JWT_SECRET;
 
-module.exports = function verifyToken(req, res, next) {
+export default function verifyToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
     return res.status(403).send({ result: "Authorization header missing" });

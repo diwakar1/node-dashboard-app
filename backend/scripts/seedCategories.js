@@ -5,9 +5,11 @@
  * Run: node scripts/seedCategories.js
  * self-Executing Script pattern
  */
-require('dotenv').config(); // Load environment variables
-require('../db/config');// Connect to the database
-const Category = require('../models/Category');// Category model
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables
+
+import '../db/config.js'; // Connect to the database
+import Category from '../models/Category.js'; // Category model
 
 const defaultCategories = [
     {

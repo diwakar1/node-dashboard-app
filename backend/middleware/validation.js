@@ -3,7 +3,7 @@
  * Contains express-validator middleware for validating user registration and login requests.
  * Exports reusable validation arrays for use in route definitions.
  */
-const { body } = require('express-validator');
+import { body } from 'express-validator';
 
 const registrationValidation = [
     body("name").notEmpty().withMessage("Name is required").trim(),
@@ -26,7 +26,7 @@ const loginValidation = [
     body("password").notEmpty().withMessage("Password is required").trim(),
 ];
 
-module.exports = {
+export {
     registrationValidation,
     loginValidation
 };

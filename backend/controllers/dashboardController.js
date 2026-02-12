@@ -3,9 +3,9 @@
  * Handles dashboard statistics and overview data
  */
 
-const Product = require('../models/Product');
-const Category = require('../models/Category');
-const User = require('../models/User');
+import Product from '../models/Product.js';
+import Category from '../models/Category.js';
+import User from '../models/User.js';
 
 /**
  * @typedef {import('../models/Product')} Product
@@ -84,6 +84,4 @@ async function getDashboardStats(req, res) {
     }
 }
 
-module.exports = {
-    getDashboardStats
-};
+export { getDashboardStats };
