@@ -6,6 +6,7 @@
 
 const log = (...args) => console.log('[ProductController]', ...args);
 
+import { validationResult } from 'express-validator';
 import * as productService from '../services/productService.js';
 
 /**
@@ -18,6 +19,12 @@ import * as productService from '../services/productService.js';
  * @returns {Promise<Product>}
  */
 export const addProduct = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        log('Add product validation failed:', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         const userId = req.user?.user?._id || req.user?._id;
         const payload = { ...req.body, userId };
@@ -58,6 +65,12 @@ export const getProducts = async (req, res) => {
  * @returns {Promise<Product>}
  */
 export const deleteProduct = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        log('Delete product validation failed:', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         const result = await productService.deleteProduct(req.params.id);
         log('Product deleted:', req.params.id);
@@ -74,6 +87,12 @@ export const deleteProduct = async (req, res) => {
  * @returns {Promise<Product>}
  */
 export const getProduct = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        log('Get product validation failed:', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         const result = await productService.getProduct(req.params.id);
         log('Fetched product:', req.params.id);
@@ -91,6 +110,12 @@ export const getProduct = async (req, res) => {
  * @returns {Promise<Product>}
  */
 export const updateProduct = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        log('Update product validation failed:', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         const result = await productService.updateProduct(req.params.id, req.body);
         log('Product updated:', req.params.id);
@@ -110,6 +135,12 @@ export const updateProduct = async (req, res) => {
  * @returns {Promise<Product[]>}
  */
 export const searchProducts = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        log('Search products validation failed:', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+    
     try {
         const result = await productService.searchProducts(req.params.key);
         log('Product search:', req.params.key, 'Results:', result.length);

@@ -9,7 +9,7 @@
 import express from 'express';
 import * as productController from '../controllers/productController.js';
 import verifyToken from '../middleware/verifyToken.js';
-import { productValidation } from '../middleware/productValidation.js';
+import { productValidation, idParamValidation, searchKeyValidation } from '../middleware/productValidation.js';
 
 const router = express.Router();
 
@@ -84,7 +84,7 @@ router.get('/', verifyToken, productController.getProducts);
  *       404:
  *         description: Product not found
  */
-router.get('/:id', verifyToken, productController.getProduct);
+router.get('/:id', verifyToken, idParamValidation, productController.getProduct);
 
 /**
  * @swagger
@@ -115,7 +115,7 @@ router.get('/:id', verifyToken, productController.getProduct);
  *       404:
  *         description: Product not found
  */
-router.put('/:id', verifyToken, productValidation, productController.updateProduct);
+router.put('/:id', verifyToken, idParamValidation, productValidation, productController.updateProduct);
 
 /**
  * @swagger
@@ -140,7 +140,7 @@ router.put('/:id', verifyToken, productValidation, productController.updateProdu
  *       404:
  *         description: Product not found
  */
-router.delete('/:id', verifyToken, productController.deleteProduct);
+router.delete('/:id', verifyToken, idParamValidation, productController.deleteProduct);
 
 /**
  * @swagger
@@ -169,6 +169,6 @@ router.delete('/:id', verifyToken, productController.deleteProduct);
  *       401:
  *         description: Unauthorized
  */
-router.get('/search/:key', verifyToken, productController.searchProducts);
+router.get('/search/:key', verifyToken, searchKeyValidation, productController.searchProducts);
 
 export default router;
