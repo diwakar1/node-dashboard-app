@@ -49,7 +49,8 @@ export const generateAccessToken = (user, secret) => {
     // Store only essential data in token payload
     const payload = {
         userId: user._id,
-        email: user.email
+        email: user.email,
+        role: user.role
     };
     return jwt.sign(payload, secret, { expiresIn: "30m" });
 };
@@ -59,7 +60,8 @@ export const generateRefreshToken = (user, refreshSecret) => {
     // Store only essential data in token payload
     const payload = {
         userId: user._id,
-        email: user.email
+        email: user.email,
+        role: user.role
     };
     return jwt.sign(payload, refreshSecret, { expiresIn: "7d" });
 };

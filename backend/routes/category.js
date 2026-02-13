@@ -1,10 +1,12 @@
 /**
  * category.js
- * Category routes with authentication middleware
+ * Category routes with role-based access
+ * GET routes are public, CRUD operations require admin
  */
 import express from 'express';
 import * as categoryController from '../controllers/categoryController.js';
 import verifyToken from '../middleware/verifyToken.js';
+import { verifyAdmin } from '../middleware/verifyAdmin.js';
 
 const router = express.Router();
 
@@ -105,7 +107,7 @@ router.get('/:id/products', categoryController.getCategoryProducts);
  *       400:
  *         description: Category already exists
  */
-router.post('/', verifyToken, categoryController.createCategory);
+router.post('/', verifyToken, verifyAdmin, categoryController.createCategory);
 
 /**
  * @swagger
@@ -131,7 +133,7 @@ router.post('/', verifyToken, categoryController.createCategory);
  *       200:
  *         description: Category updated
  */
-router.put('/:id', verifyToken, categoryController.updateCategory);
+router.put('/:id', verifyToken, verifyAdmin, categoryController.updateCategory);
 
 /**
  * @swagger
@@ -153,6 +155,6 @@ router.put('/:id', verifyToken, categoryController.updateCategory);
  *       400:
  *         description: Category in use
  */
-router.delete('/:id', verifyToken, categoryController.deleteCategory);
+router.delete('/:id', verifyToken, verifyAdmin, categoryController.deleteCategory);
 
 export default router;

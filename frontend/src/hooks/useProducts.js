@@ -99,10 +99,10 @@ export function useProducts({ autoLoad = true } = {}) {
     setError(null);
     try {
       const product = await fetchProductById(id);
-      return product;
+      return { success: true, product };
     } catch (err) {
       setError(err.message);
-      return null;
+      return { success: false, error: err.message };
     } finally {
       setLoading(false);
     }

@@ -43,6 +43,7 @@ export const addProduct = async (req, res) => {
 
 /**
  * Get all products
+ * Everyone sees all products (public browsing)
  * @returns {Promise<Product[]>}
  */
 export const getProducts = async (req, res) => {
@@ -132,6 +133,7 @@ export const updateProduct = async (req, res) => {
 
 /**
  * Search products by keyword
+ * Everyone searches all products
  * @param {string} req.params.key - Search keyword
  * @returns {Promise<Product[]>}
  */
