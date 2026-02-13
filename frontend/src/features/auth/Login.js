@@ -41,7 +41,8 @@ const Login = () => {
     if (!result.success) {
       setFieldError("server", result.error);
     } else {
-      navigate("/");
+      // Navigate to role-specific page
+      navigate(result.redirectPath || "/");
     }
   };
 

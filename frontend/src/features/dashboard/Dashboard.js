@@ -92,34 +92,6 @@ function Dashboard() {
                     ))}
                 </div>
             </div>
-
-            {/* Recent Products */}
-            {stats.recentProducts && stats.recentProducts.length > 0 && (
-                <div className="dashboard-section">
-                    <div className="section-header">
-                        <h2>Recent Products</h2>
-                        <Link to="/products" className="view-all-link">View All</Link>
-                    </div>
-                    <div className="recent-products">
-                        {stats.recentProducts.map((product) => (
-                            <div key={product._id} className="recent-product-item">
-                                <div className="product-name">
-                                    <strong>{product.name}</strong>
-                                    <span className="product-company">{product.company}</span>
-                                </div>
-                                <div className="product-meta">
-                                    {product.categoryId && (
-                                        <span className="product-category" style={{ color: product.categoryId.color }}>
-                                            <i className={product.categoryId.icon}></i> {product.categoryId.name}
-                                        </span>
-                                    )}
-                                    <span className="product-price">${product.price}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

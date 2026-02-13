@@ -23,3 +23,13 @@ export const PRODUCT_ENDPOINTS = {
   DELETE: (id) => `${API_BASE_URL}${API_VERSION}/products/${id}`,
   SEARCH: (key) => `${API_BASE_URL}${API_VERSION}/products/search/${key}`,
 };
+
+// Order Endpoints
+export const ORDER_ENDPOINTS = {
+  GET_ALL: `${API_BASE_URL}${API_VERSION}/orders`,
+  GET_BY_ID: (id) => `${API_BASE_URL}${API_VERSION}/orders/${id}`,
+  CREATE: `${API_BASE_URL}${API_VERSION}/orders`,
+  UPDATE_STATUS: (id) => `${API_BASE_URL}${API_VERSION}/orders/${id}/status`,
+  CANCEL: (id) => `${API_BASE_URL}${API_VERSION}/orders/${id}/cancel`,
+};
+

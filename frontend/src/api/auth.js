@@ -68,3 +68,15 @@ export async function authFetch(url, options = {}) {
 	}
 	return response;
 }
+
+// Helper function for making authenticated API requests
+export async function apiRequest(url, options = {}) {
+	try {
+		const response = await authFetch(url, options);
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error('API Request Error:', error);
+		throw error;
+	}
+}

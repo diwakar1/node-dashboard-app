@@ -24,6 +24,11 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
+  // Check if current user is admin
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
+
   const login = async (email, password) => {
     try {
       const response = await fetch(`${API_BASE_URL}${AUTH_ENDPOINTS.LOGIN}`, {
@@ -40,7 +45,11 @@ export function AuthProvider({ children }) {
         setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken });
         setUser(result.user);
         setIsAuthenticated(true);
-        return { success: true };
+        
+        // Redirect based on role
+        const redirectPath = result.user.role === 'admin' ? '/dashboard' : '/products';
+        
+        return { success: true, redirectPath };
       } else {
         return { success: false, error: result.error || AUTH_ERRORS.LOGIN_FAILED };
       }
@@ -84,6 +93,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     signup,
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
