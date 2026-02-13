@@ -6,7 +6,12 @@
  * self-Executing Script pattern
  */
 import dotenv from 'dotenv';
-dotenv.config(); // Load environment variables
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '..', '.env') }); // Load environment variables
 
 import '../db/config.js'; // Connect to the database
 import Category from '../models/Category.js'; // Category model
