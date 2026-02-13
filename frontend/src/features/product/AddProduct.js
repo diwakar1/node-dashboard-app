@@ -80,6 +80,8 @@ const AddProduct = () => {
 			))}
 		</select>
 		{errors.categoryId && <span className="invalid-input">{errors.categoryId}</span>}
+
+			<input
 				type="text"
 				className="inputBox"
 				placeholder="Enter product company"
