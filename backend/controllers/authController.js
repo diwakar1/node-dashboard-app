@@ -10,9 +10,6 @@ import { validationResult } from 'express-validator';
 import * as userService from '../services/userService.js';
 import RefreshToken from '../models/refreshToken.js';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET;
-
 /**
  * @typedef {import('../models/User')} User
  */
@@ -79,9 +76,9 @@ export const login = async (req, res) => {
     user = user.toObject();
     delete user.password;
     try {
-        // Generate tokens
-        const accessToken = userService.generateAccessToken(user, JWT_SECRET);
-        const refreshToken = userService.generateRefreshToken(user, REFRESH_SECRET);
+        // Generate tokens (access env vars directly to ensure they're loaded)
+        const accessToken = userService.generateAccessToken(user, process.env.JWT_SECRET);
+        const refreshToken = userService.generateRefreshToken(user, process.env.REFRESH_SECRET);
 
         // Store refresh token in DB (overwrite if exists)
         await RefreshToken.findOneAndUpdate(

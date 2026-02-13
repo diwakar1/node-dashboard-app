@@ -6,14 +6,20 @@
  */
 
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ES6 modules (needed for dotenv path)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables with explicit path
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 import express from 'express';
 import './db/config.js';
 import cors from 'cors';
 import logger from './middleware/logger.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 
@@ -23,10 +29,6 @@ import productRoutes from './routes/product.js';
 import refreshRoutes from './routes/refresh.js';
 import categoryRoutes from './routes/category.js';
 import dashboardRoutes from './routes/dashboard.js';
-
-// Get __dirname equivalent in ES6 modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 
 const app = express();

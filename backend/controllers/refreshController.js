@@ -6,9 +6,6 @@
 import * as userService from '../services/userService.js';
 import RefreshToken from '../models/refreshToken.js';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_SECRET = process.env.REFRESH_SECRET;
-
 /**
  * Refresh access token using refresh token
  * @param {Object} req.body - Contains refreshToken
@@ -24,13 +21,13 @@ export const refresh = async (req, res) => {
   if (!stored || stored.expiresAt < new Date()) {
     return res.status(403).json({ error: 'Invalid or expired refresh token' });
   }
-  // Verify refresh token
-  const payload = userService.verifyRefreshToken(refreshToken, REFRESH_SECRET);
+  // Verify refresh token (access env vars directly)
+  const payload = userService.verifyRefreshToken(refreshToken, process.env.REFRESH_SECRET);
   if (!payload) {
     return res.status(403).json({ error: 'Invalid refresh token' });
   }
-  // Issue new access token
+  // Issue new access token (access env vars directly)
   // Payload now contains userId and email directly
-  const accessToken = userService.generateAccessToken(payload, JWT_SECRET);
+  const accessToken = userService.generateAccessToken(payload, process.env.JWT_SECRET);
   res.json({ accessToken });
 };

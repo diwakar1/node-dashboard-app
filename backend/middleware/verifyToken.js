@@ -5,8 +5,6 @@
  */
 import jwt from 'jsonwebtoken';
 
-const jwtKey = process.env.JWT_SECRET;
-
 export default function verifyToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
@@ -20,7 +18,8 @@ export default function verifyToken(req, res, next) {
 
   const token = parts[1];
 
-  jwt.verify(token, jwtKey, (err, decoded) => {
+  // Access JWT_SECRET directly from process.env to ensure it's loaded
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send("Please provide a valid token");
     }
