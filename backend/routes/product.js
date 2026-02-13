@@ -9,6 +9,7 @@
 import express from 'express';
 import * as productController from '../controllers/productController.js';
 import verifyToken from '../middleware/verifyToken.js';
+import { verifyAdmin } from '../middleware/verifyAdmin.js';
 import { productValidation, idParamValidation, searchKeyValidation } from '../middleware/productValidation.js';
 
 const router = express.Router();
@@ -115,7 +116,7 @@ router.get('/:id', verifyToken, idParamValidation, productController.getProduct)
  *       404:
  *         description: Product not found
  */
-router.put('/:id', verifyToken, idParamValidation, productValidation, productController.updateProduct);
+router.put('/:id', verifyToken, verifyAdmin, idParamValidation, productValidation, productController.updateProduct);
 
 /**
  * @swagger
@@ -140,7 +141,7 @@ router.put('/:id', verifyToken, idParamValidation, productValidation, productCon
  *       404:
  *         description: Product not found
  */
-router.delete('/:id', verifyToken, idParamValidation, productController.deleteProduct);
+router.delete('/:id', verifyToken, verifyAdmin, idParamValidation, productController.deleteProduct);
 
 /**
  * @swagger
