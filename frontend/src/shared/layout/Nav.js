@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 const Nav = () => {
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
+  const { getCartCount } = useCart();
+  const cartCount = getCartCount();
 
   return (
     <div style={{ width: "100%" }}>
@@ -40,6 +43,32 @@ const Nav = () => {
           <li>
             <Link to="/products">Products</Link>
           </li>
+          
+          {/* Cart - User-only */}
+          {!isAdmin() && (
+            <li style={{ position: 'relative' }}>
+              <Link to="/cart" style={{ position: 'relative' }}>
+                <i className="fa-solid fa-shopping-cart"></i> Cart
+                {cartCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-10px',
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 6px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    minWidth: '18px',
+                    textAlign: 'center'
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </li>
+          )}
           
           {/* User-only navigation */}
           {!isAdmin() && (

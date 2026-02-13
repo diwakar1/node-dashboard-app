@@ -1,22 +1,18 @@
 /**
  * Checkout.js
- * Simple checkout page for placing an order for a single product
+ * Checkout page for placing orders with items from cart
  */
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useProducts } from '../../hooks/useProducts';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 import { useOrders } from '../../hooks/useOrders';
 import { useForm } from '../../hooks/useForm';
 import './Checkout.css';
 
 const Checkout = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const { getProductById } = useProducts();
+  const { cartItems, getCartTotal, clearCart } = useCart();
   const { placeOrder, loading: orderLoading } = useOrders();
-  const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [productLoading, setProductLoading] = useState(true);
 
   const { values, errors, handleChange, handleBlur, validate } = useForm({
     initialValues: {
@@ -48,38 +44,23 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    loadProduct();
-  }, [id]);
-
-  const loadProduct = async () => {
-    setProductLoading(true);
-    const result = await getProductById(id);
-    if (result.success) {
-      setProduct(result.product);
-    } else {
-      alert('Product not found');
-      navigate('/products');
+    // Redirect to cart if cart is empty
+    if (cartItems.length === 0) {
+      alert('Your cart is empty!');
+      navigate('/cart');
     }
-    setProductLoading(false);
-  };
+  }, [cartItems, navigate]);
 
   const handlePlaceOrder = async () => {
     if (!validate()) {
       return;
     }
 
-    if (quantity < 1) {
-      alert('Quantity must be at least 1');
-      return;
-    }
-
     const orderData = {
-      items: [
-        {
-          productId: product._id,
-          quantity: quantity
-        }
-      ],
+      items: cartItems.map(item => ({
+        productId: item._id,
+        quantity: item.quantity
+      })),
       shippingAddress: {
         fullName: values.fullName,
         address: values.address,
@@ -94,6 +75,7 @@ const Checkout = () => {
 
     const result = await placeOrder(orderData);
     if (result.success) {
+      clearCart(); // Clear cart after successful order
       alert('Order placed successfully!');
       navigate('/orders');
     } else {
@@ -101,15 +83,11 @@ const Checkout = () => {
     }
   };
 
-  if (productLoading) {
-    return <div className="container"><p>Loading product...</p></div>;
+  if (cartItems.length === 0) {
+    return null; // Will be redirected by useEffect
   }
 
-  if (!product) {
-    return <div className="container"><p>Product not found</p></div>;
-  }
-
-  const totalAmount = product.price * quantity;
+  const totalAmount = getCartTotal();
 
   return (
     <div className="container">
@@ -118,30 +96,6 @@ const Checkout = () => {
 
         <div className="checkout-layout">
           <div className="checkout-form">
-            <div className="product-summary">
-              <h3>Order Summary</h3>
-              <div className="product-info">
-                <p><strong>{product.name}</strong></p>
-                <p>Price: ${product.price}</p>
-                <p>Company: {product.company}</p>
-                
-                <div className="quantity-selector">
-                  <label>Quantity:</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className="quantity-input"
-                  />
-                </div>
-                
-                <div className="total">
-                  <strong>Total: ${totalAmount.toFixed(2)}</strong>
-                </div>
-              </div>
-            </div>
-
             <h3>Shipping Address</h3>
             
             <input
@@ -245,10 +199,10 @@ const Checkout = () => {
 
             <div className="checkout-actions">
               <button 
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/cart')}
                 className="cancel-button"
               >
-                Cancel
+                Back to Cart
               </button>
               <button 
                 onClick={handlePlaceOrder}
@@ -257,6 +211,46 @@ const Checkout = () => {
               >
                 {orderLoading ? 'Placing Order...' : 'Place Order'}
               </button>
+            </div>
+          </div>
+
+          {/* Order Summary Sidebar */}
+          <div className="order-summary-sidebar">
+            <h3>Order Summary</h3>
+            
+            <div className="summary-items">
+              {cartItems.map(item => (
+                <div key={item._id} className="summary-item">
+                  <div className="summary-item-info">
+                    <p className="item-name">{item.name}</p>
+                    <p className="item-details">
+                      ${item.price} × {item.quantity}
+                    </p>
+                  </div>
+                  <p className="item-subtotal">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="summary-divider"></div>
+
+            <div className="summary-row">
+              <span>Subtotal:</span>
+              <span>${totalAmount.toFixed(2)}</span>
+            </div>
+
+            <div className="summary-row">
+              <span>Shipping:</span>
+              <span className="free-text">FREE</span>
+            </div>
+
+            <div className="summary-divider"></div>
+
+            <div className="summary-total">
+              <span>Total:</span>
+              <span>${totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>
