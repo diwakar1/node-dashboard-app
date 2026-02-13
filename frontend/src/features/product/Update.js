@@ -30,8 +30,9 @@ const Update = () => {
 	}, []);
 
 	const getProductDetails = async () => {
-		const product = await getProductById(params.id);
-		if (product) {
+		const result = await getProductById(params.id);
+		if (result.success && result.product) {
+			const product = result.product;
 			setValues({
 				name: product.name,
 				price: product.price,
@@ -46,8 +47,8 @@ const Update = () => {
 			return;
 		}
 		const result = await editProduct(params.id, values);
-		if (result) {
-			navigate("/");
+		if (result.success) {
+			navigate("/products");
 		}
 	};
 
