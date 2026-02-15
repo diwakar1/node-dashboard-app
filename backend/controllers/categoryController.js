@@ -4,6 +4,7 @@
  */
 
 import * as categoryService from '../services/categoryService.js';
+import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
  * @typedef {import('../models/Category')} Category
@@ -19,7 +20,7 @@ async function getCategories(req, res) {
         const categories = await categoryService.getAllCategories();
         res.status(200).json(categories);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to fetch categories');
     }
 }
 
@@ -33,10 +34,7 @@ async function getCategory(req, res) {
         const category = await categoryService.getCategoryById(req.params.id);
         res.status(200).json(category);
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to fetch category');
     }
 }
 
@@ -51,10 +49,7 @@ async function createCategory(req, res) {
         const category = await categoryService.createCategory(req.body);
         res.status(201).json(category);
     } catch (error) {
-        if (error.message.includes('already exists')) {
-            return res.status(400).json({ error: error.message });
-        }
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to create category');
     }
 }
 
@@ -70,10 +65,7 @@ async function updateCategory(req, res) {
         const category = await categoryService.updateCategory(req.params.id, req.body);
         res.status(200).json(category);
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to update category');
     }
 }
 
@@ -88,13 +80,7 @@ async function deleteCategory(req, res) {
         await categoryService.deleteCategory(req.params.id);
         res.status(200).json({ message: 'Category deleted successfully' });
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-        if (error.message.includes('Cannot delete')) {
-            return res.status(400).json({ error: error.message });
-        }
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to delete category');
     }
 }
 
@@ -109,10 +95,7 @@ async function getCategoryProducts(req, res) {
         const result = await categoryService.getProductsByCategory(req.params.id);
         res.status(200).json(result);
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to fetch category products');
     }
 }
 
@@ -126,7 +109,7 @@ async function getCategoryStats(req, res) {
         const stats = await categoryService.getCategoryStats();
         res.status(200).json(stats);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        handleControllerError(res, error, 'Failed to fetch category statistics');
     }
 }
 

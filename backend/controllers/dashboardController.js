@@ -6,6 +6,7 @@
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
+import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
  * @typedef {import('../models/Product')} Product
@@ -80,7 +81,7 @@ async function getDashboardStats(req, res) {
 
         res.status(200).json(stats);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch dashboard statistics: ' + error.message });
+        handleControllerError(res, error, 'Failed to fetch dashboard statistics');
     }
 }
 

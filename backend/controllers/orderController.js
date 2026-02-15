@@ -9,6 +9,7 @@ const log = (...args) => console.log('[OrderController]', ...args);
 import { validationResult } from 'express-validator';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
+import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
  * Create a new order
@@ -67,7 +68,7 @@ export const createOrder = async (req, res) => {
         });
     } catch (error) {
         log('Create order error:', error.message);
-        res.status(500).json({ error: 'Failed to create order', detail: error.message });
+        handleControllerError(res, error, 'Failed to create order');
     }
 };
 
@@ -93,7 +94,7 @@ export const getOrders = async (req, res) => {
         res.json({ orders });
     } catch (error) {
         log('Get orders error:', error.message);
-        res.status(500).json({ error: 'Failed to retrieve orders', detail: error.message });
+        handleControllerError(res, error, 'Failed to retrieve orders');
     }
 };
 
@@ -129,7 +130,7 @@ export const getOrderById = async (req, res) => {
         res.json({ order });
     } catch (error) {
         log('Get order error:', error.message);
-        res.status(500).json({ error: 'Failed to retrieve order', detail: error.message });
+        handleControllerError(res, error, 'Failed to retrieve order');
     }
 };
 
@@ -163,7 +164,7 @@ export const updateOrderStatus = async (req, res) => {
         });
     } catch (error) {
         log('Update order status error:', error.message);
-        res.status(500).json({ error: 'Failed to update order status', detail: error.message });
+        handleControllerError(res, error, 'Failed to update order status');
     }
 };
 
@@ -210,6 +211,6 @@ export const cancelOrder = async (req, res) => {
         });
     } catch (error) {
         log('Cancel order error:', error.message);
-        res.status(500).json({ error: 'Failed to cancel order', detail: error.message });
+        handleControllerError(res, error, 'Failed to cancel order');
     }
 };

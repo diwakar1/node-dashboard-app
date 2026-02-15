@@ -9,6 +9,7 @@ const log = (...args) => console.log('[AuthController]', ...args);
 import { validationResult } from 'express-validator';
 import * as userService from '../services/userService.js';
 import RefreshToken from '../models/refreshToken.js';
+import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
  * @typedef {import('../models/User')} User
@@ -38,7 +39,7 @@ export const signup = async (req, res) => {
         res.send({ user });
     } catch (e) {
         log('Registration error:', e.message);
-        res.status(500).send({ error: "registration failed", detail: e.message });
+        handleControllerError(res, e, 'Registration failed');
     }
 };
 
@@ -95,6 +96,6 @@ export const login = async (req, res) => {
         res.send({ user, accessToken, refreshToken });
     } catch (err) {
         log('JWT generation error:', err.message);
-        res.status(500).send({ error: "something wrong in security" });
+        handleControllerError(res, err, 'Authentication failed');
     }
 };
