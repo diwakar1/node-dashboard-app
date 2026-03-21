@@ -10,6 +10,7 @@ import { validationResult } from 'express-validator';
 import * as userService from '../services/userService.js';
 import RefreshToken from '../models/refreshToken.js';
 import { handleControllerError } from '../utils/errorHandler.js';
+import bcrypt from 'bcryptjs';
 
 /**
  * @typedef {import('../models/User')} User

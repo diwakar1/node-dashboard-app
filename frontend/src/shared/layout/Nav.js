@@ -1,7 +1,9 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import "./nav.css";
 
 const Nav = () => {
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
@@ -89,7 +91,7 @@ const Nav = () => {
           </li>
           <li>
             <Link onClick={logout} to="/login" className="nav-logout-link">
-              Logout ({user.name ? user.name : ""}) {isAdmin() ? '👑' : ''}
+              Logout ({user.name ? user.name : ""}) 
             </Link>
           </li>
         </ul>

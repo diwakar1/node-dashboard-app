@@ -48,11 +48,7 @@ export const getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
         log('Fetched products:', products.length);
-        if (products.length > 0) {
-            res.send(products);
-        } else {
-            res.send({ result: "no products found" });
-        }
+        res.send(Array.isArray(products) ? products : []);
     } catch (e) {
         log('Get products error:', e.message);
         handleControllerError(res, e, 'Failed to fetch products');
