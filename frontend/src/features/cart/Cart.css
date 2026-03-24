@@ -197,7 +197,7 @@
     width: 36px;
     height: 36px;
     border: none;
-    background-color: #f8f9fa;
+    background-color: #cb6464;
     color: #dc3545;
     border-radius: 50%;
     cursor: pointer;
@@ -273,7 +273,7 @@
 }
 
 .checkout-btn:hover {
-    background-color: #218838;
+    background-color: #595798;
 }
 
 .continue-shopping-btn {

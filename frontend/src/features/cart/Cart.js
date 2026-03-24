@@ -30,7 +30,7 @@ const Cart = () => {
     };
 
     const handleDecrement = (productId, currentQuantity) => {
-        if (currentQuantity > 1) {
+        if (currentQuantity >= 1) {
             updateQuantity(productId, currentQuantity - 1);
         }
     };
@@ -100,9 +100,9 @@ const Cart = () => {
                                     <button 
                                         onClick={() => handleDecrement(item._id, item.quantity)}
                                         className="qty-btn"
-                                        disabled={item.quantity <= 1}
+                                        disabled={item.quantity <= 0}
                                     >
-                                        <i className="fa-solid fa-minus"></i>
+                                        <i className="fa-solid fa-minus">-</i>
                                     </button>
                                     <input
                                         type="number"
@@ -115,7 +115,7 @@ const Cart = () => {
                                         onClick={() => handleIncrement(item._id, item.quantity)}
                                         className="qty-btn"
                                     >
-                                        <i className="fa-solid fa-plus"></i>
+                                        <i className="fa-solid fa-plus">+</i>
                                     </button>
                                 </div>
 

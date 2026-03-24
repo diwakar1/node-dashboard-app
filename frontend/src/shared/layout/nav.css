@@ -50,3 +50,16 @@
   color: #0056b3;
   text-decoration: underline;
 }
+.nav-logout-link {
+  padding: 8px 22px;
+  margin-left: 10px;
+  border-radius: 22px;
+  background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(240, 152, 25, 0.10);
+  transition: background 0.2s, transform 0.1s;
+  display: inline-block;
+}
