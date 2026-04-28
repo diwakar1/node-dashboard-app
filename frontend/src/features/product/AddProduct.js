@@ -1,109 +1,175 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useProducts } from "../../hooks/useProducts";
-import { useForm } from "../../hooks/useForm";
 import { useCategories } from "../../hooks/useCategories";
+import "./ProductForm.css";
 
 const AddProduct = () => {
-	const navigate = useNavigate();
-	const { createProduct, loading, error: productError } = useProducts();
-	const { categories, loading: categoriesLoading } = useCategories();
-	
-	const { values, errors, handleChange, handleBlur, validate } = useForm({
-		initialValues: {
-			name: "",
-			price: "",
-			categoryId: "",
-			company: ""
-		},
-		validationRules: {
-			name: { required: true, message: "Enter valid name" },
-			price: { required: true, message: "Enter valid price" },
-			categoryId: { required: true, message: "Select a category" },
-			company: { required: true, message: "Enter valid company" }
-		}
-	});
+const navigate = useNavigate();
+const { createProduct, loading, error: productError } = useProducts();
+const { categories, loading: categoriesLoading } = useCategories();
 
-	const handleAddProduct = async () => {
-		if (!validate()) {
-			return;
-		}
-		
-		const result = await createProduct(values);
-		if (result?.success) {
-			navigate('/');
-		}
-	};
+const [values, setValues] = useState({ name: "", price: "", categoryId: "", company: "" });
+const [errors, setErrors] = useState({});
+const [success, setSuccess] = useState(false);
 
-	return (
-		<div className="container">
-			 <div className="addProduct">
-			<h3>Add product here</h3>
-			
-			{productError && <span className="error">{productError}</span>}
+const validate = () => {
+const e = {};
+if (!values.name.trim())       e.name       = "Product name is required";
+if (!values.price || isNaN(values.price) || Number(values.price) <= 0)
+                               e.price      = "Enter a valid price greater than 0";
+if (!values.categoryId)        e.categoryId = "Please select a category";
+if (!values.company.trim())    e.company    = "Brand / company name is required";
+setErrors(e);
+return Object.keys(e).length === 0;
+};
 
-			<input
-				type="text"
-				className="inputBox"
-				placeholder="Enter product name"
-				name="name"
-				value={values.name}
-				onChange={handleChange}
-				onBlur={handleBlur}
-			/>
-			{errors.name && <span className="invalid-input">{errors.name}</span>}
+const handleChange = (e) => {
+const { name, value } = e.target;
+setValues(v => ({ ...v, [name]: value }));
+if (errors[name]) setErrors(er => ({ ...er, [name]: "" }));
+};
 
-			<input
-				type="text"
-				className="inputBox"
-				placeholder="Enter product price"
-				name="price"
-				value={values.price}
-				onChange={handleChange}
-				onBlur={handleBlur}
-			/>
-			{errors.price && <span className="invalid-input">{errors.price}</span>}
+const handleSubmit = async () => {
+if (!validate()) return;
+const result = await createProduct(values);
+if (result?.success) {
+setSuccess(true);
+setTimeout(() => navigate("/products"), 1200);
+}
+};
 
-			<select
-				className="inputBox"
-			name="categoryId"
-			value={values.categoryId}
-			onChange={handleChange}
-			onBlur={handleBlur}
-			disabled={categoriesLoading}
-		>
-			<option value="">Select Category</option>
-			{categories.map((cat) => (
-				<option key={cat._id} value={cat._id}>
-					{cat.name}
-				</option>
-			))}
-		</select>
-		{errors.categoryId && <span className="invalid-input">{errors.categoryId}</span>}
+return (
+<div className="pf-page">
+<div className="pf-wrapper">
 
-			<input
-				type="text"
-				className="inputBox"
-				placeholder="Enter product company"
-				name="company"
-				value={values.company}
-				onChange={handleChange}
-				onBlur={handleBlur}
-			/>
-			{errors.company && <span className="invalid-input">{errors.company}</span>}
+{/* Page header */}
+<div className="pf-page-header">
+<Link to="/products" className="pf-back-btn" title="Back to Products">
+<i className="fa-solid fa-arrow-left"></i>
+</Link>
+<h1 className="pf-page-title">
+<i className="fa-solid fa-plus-circle"></i> Add New Product
+</h1>
+</div>
 
-			<button 
-				className="appButton" 
-				type="button" 
-				onClick={handleAddProduct}
-				disabled={loading}
-			>
-				{loading ? "Adding..." : "Add Product"}
-			</button>
-		</div>
-		</div>
-   
-	);
+{/* Banners */}
+{productError && (
+<div className="pf-banner pf-banner-error">
+<i className="fa-solid fa-triangle-exclamation"></i> {productError}
+</div>
+)}
+{success && (
+<div className="pf-banner pf-banner-success">
+<i className="fa-solid fa-circle-check"></i> Product added! Redirecting…
+</div>
+)}
+
+{/* Form Card */}
+<div className="pf-card">
+<div className="pf-card-header">
+<h3><i className="fa-solid fa-info-circle"></i> Product Details</h3>
+</div>
+
+<div className="pf-card-body">
+<div className="pf-grid">
+
+{/* Product Name – full width */}
+<div className="pf-field full">
+<label className="pf-label">Product Name <span className="pf-required">*</span></label>
+<div className="pf-input-wrap">
+<i className="fa-solid fa-box pf-input-icon"></i>
+<input
+className={`pf-input has-icon ${errors.name ? "error" : ""}`}
+type="text"
+name="name"
+placeholder="e.g. Sony WH-1000XM5 Headphones"
+value={values.name}
+onChange={handleChange}
+/>
+</div>
+{errors.name && <span className="pf-error-msg"><i className="fa-solid fa-circle-exclamation"></i>{errors.name}</span>}
+</div>
+
+{/* Price */}
+<div className="pf-field">
+<label className="pf-label">Price (USD) <span className="pf-required">*</span></label>
+<div className="pf-input-wrap">
+<i className="fa-solid fa-dollar-sign pf-input-icon"></i>
+<input
+className={`pf-input has-icon ${errors.price ? "error" : ""}`}
+type="number"
+name="price"
+placeholder="0.00"
+min="0"
+step="0.01"
+value={values.price}
+onChange={handleChange}
+/>
+</div>
+{errors.price && <span className="pf-error-msg"><i className="fa-solid fa-circle-exclamation"></i>{errors.price}</span>}
+</div>
+
+{/* Category */}
+<div className="pf-field">
+<label className="pf-label">Category <span className="pf-required">*</span></label>
+<div className="pf-select-wrap">
+<select
+className={`pf-select ${errors.categoryId ? "error" : ""}`}
+name="categoryId"
+value={values.categoryId}
+onChange={handleChange}
+disabled={categoriesLoading}
+>
+<option value="">Select a category…</option>
+{categories.map(cat => (
+<option key={cat._id} value={cat._id}>{cat.name}</option>
+))}
+</select>
+</div>
+{errors.categoryId && <span className="pf-error-msg"><i className="fa-solid fa-circle-exclamation"></i>{errors.categoryId}</span>}
+</div>
+
+{/* Company / Brand – full width */}
+<div className="pf-field full">
+<label className="pf-label">Brand / Company <span className="pf-required">*</span></label>
+<div className="pf-input-wrap">
+<i className="fa-solid fa-building pf-input-icon"></i>
+<input
+className={`pf-input has-icon ${errors.company ? "error" : ""}`}
+type="text"
+name="company"
+placeholder="e.g. Sony, Apple, Samsung"
+value={values.company}
+onChange={handleChange}
+/>
+</div>
+{errors.company && <span className="pf-error-msg"><i className="fa-solid fa-circle-exclamation"></i>{errors.company}</span>}
+</div>
+
+</div>
+</div>
+
+<div className="pf-actions">
+<Link to="/products" className="pf-btn pf-btn-secondary">
+<i className="fa-solid fa-xmark"></i> Cancel
+</Link>
+<button
+className="pf-btn pf-btn-primary"
+onClick={handleSubmit}
+disabled={loading}
+>
+{loading
+? <><i className="fa-solid fa-spinner fa-spin"></i> Adding…</>
+: <><i className="fa-solid fa-plus"></i> Add Product</>
+}
+</button>
+</div>
+</div>
+
+</div>
+</div>
+);
 };
 
 export default AddProduct;

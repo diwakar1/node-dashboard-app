@@ -24,7 +24,7 @@ async function getDashboardStats(req, res) {
     try {
         // Get total counts
         const totalProducts = await Product.countDocuments();
-        const totalUsers    = await User.countDocuments({ role: 'user' });
+        const totalUsers    = await User.countDocuments({ role: { $ne: 'admin' } });
         const totalOrders   = await Order.countDocuments();
 
         // Revenue: sum of totalAmount on delivered orders
