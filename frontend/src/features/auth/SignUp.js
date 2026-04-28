@@ -11,19 +11,16 @@ const SignUp = () => {
     initialValues: { name: "", email: "", password: "" },
     validationRules: {
       name: {
-        required: true,
-        minLength: VALIDATION_RULES.NAME_MIN_LENGTH,
-        message: VALIDATION_ERRORS.MIN_LENGTH("Name", VALIDATION_RULES.NAME_MIN_LENGTH),
+        required: { value: true, message: VALIDATION_ERRORS.REQUIRED("Name") },
+        minLength: { value: VALIDATION_RULES.NAME_MIN_LENGTH, message: VALIDATION_ERRORS.MIN_LENGTH("Name", VALIDATION_RULES.NAME_MIN_LENGTH) },
       },
       email: {
-        required: true,
-        pattern: VALIDATION_RULES.EMAIL_PATTERN,
-        message: AUTH_ERRORS.INVALID_EMAIL,
+        required: { value: true, message: VALIDATION_ERRORS.REQUIRED("Email") },
+        pattern: { value: VALIDATION_RULES.EMAIL_PATTERN, message: AUTH_ERRORS.INVALID_EMAIL },
       },
       password: {
-        required: true,
-        minLength: VALIDATION_RULES.PASSWORD_MIN_LENGTH,
-        message: AUTH_ERRORS.INVALID_PASSWORD,
+        required: { value: true, message: VALIDATION_ERRORS.REQUIRED("Password") },
+        minLength: { value: VALIDATION_RULES.PASSWORD_MIN_LENGTH, message: AUTH_ERRORS.INVALID_PASSWORD },
       },
     }
   });

@@ -9,29 +9,21 @@ export function useForm({ initialValues = {}, validationRules = {} }) {
     const rules = validationRules[fieldName];
     if (!rules) return "";
 
-    let message = "";
-    
     // Check if required
-    if (rules.required && !value.trim()) {
-      message = rules.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} is required`;
-      setErrors((prev) => ({ ...prev, [fieldName]: message }));
-      return message;
+    if (rules.required?.value && !value.trim()) {
+      setErrors((prev) => ({ ...prev, [fieldName]: rules.required.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} is required`}));
+      return rules.required.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} is required`;
     }
-
     // Check min length
-    if (rules.minLength && value.length < rules.minLength) {
-      message = rules.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} must be at least ${rules.minLength} characters`;
-      setErrors((prev) => ({ ...prev, [fieldName]: message }));
-      return message;
+    if (rules.minLength?.value && value.length < rules.minLength.value) {
+      setErrors((prev) => ({ ...prev, [fieldName]: rules.minLength.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} must be at least ${rules.minLength.value} characters`}));
+      return rules.minLength.message || `${fieldName[0].toUpperCase() + fieldName.slice(1)} must be at least ${rules.minLength.value} characters`;
     }
-
     // Check pattern (e.g., email)
-    if (rules.pattern && !rules.pattern.test(value)) {
-      message = rules.message || `Invalid ${fieldName}`;
-      setErrors((prev) => ({ ...prev, [fieldName]: message }));
-      return message;
+    if (rules.pattern?.value && !rules.pattern.value.test(value)) {
+      setErrors((prev) => ({ ...prev, [fieldName]: rules.pattern.message || `Invalid ${fieldName}`}));
+      return rules.pattern.message || `Invalid ${fieldName}`;
     }
-
     // Clear error if valid
     setErrors((prev) => ({ ...prev, [fieldName]: "" }));
     return "";

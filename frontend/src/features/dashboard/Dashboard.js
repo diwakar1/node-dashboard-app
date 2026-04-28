@@ -22,6 +22,7 @@ function Dashboard() {
         try {
             const data = await fetchDashboardStats();
             setStats(data);
+            console.log('Dashboard stats loaded:', data);
         } catch (err) {
             setError(err.message);
         } finally {

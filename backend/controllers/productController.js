@@ -8,6 +8,7 @@ const log = (...args) => console.log('[ProductController]', ...args);
 
 import { validationResult } from 'express-validator';
 import * as productService from '../services/productService.js';
+import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
  * @typedef {import('../models/Product')} Product
@@ -34,10 +35,7 @@ export const addProduct = async (req, res) => {
         res.send(result);
     } catch (e) {
         log('Add product error:', e.message);
-        if (e.message.includes('Invalid category')) {
-            return res.status(400).send({ error: e.message });
-        }
-        res.status(500).send({ error: "Failed to add product", detail: e.message });
+        handleControllerError(res, e, 'Failed to add product');
     }
 };
 
@@ -50,14 +48,10 @@ export const getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
         log('Fetched products:', products.length);
-        if (products.length > 0) {
-            res.send(products);
-        } else {
-            res.send({ result: "no products found" });
-        }
+        res.send(Array.isArray(products) ? products : []);
     } catch (e) {
         log('Get products error:', e.message);
-        res.status(500).send({ error: "Failed to fetch products", detail: e.message });
+        handleControllerError(res, e, 'Failed to fetch products');
     }
 };
 
@@ -79,7 +73,7 @@ export const deleteProduct = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Delete product error:', err.message);
-        res.status(500).send({ error: "something went wrong while deleting product" });
+        handleControllerError(res, err, 'Failed to delete product');
     }
 };
 
@@ -101,7 +95,7 @@ export const getProduct = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Get product error:', err.message);
-        res.status(500).send({ error: "no record found" });
+        handleControllerError(res, err, 'Failed to fetch product');
     }
 };
 
@@ -124,10 +118,7 @@ export const updateProduct = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Update product error:', err.message);
-        if (err.message.includes('Invalid category')) {
-            return res.status(400).send({ error: err.message });
-        }
-        res.status(500).send({ error: "Failed to update product" });
+        handleControllerError(res, err, 'Failed to update product');
     }
 };
 
@@ -150,6 +141,6 @@ export const searchProducts = async (req, res) => {
         res.send(result);
     } catch (err) {
         log('Search products error:', err.message);
-        res.status(500).send({ error: "Failed to search products" });
+        handleControllerError(res, err, 'Failed to search products');
     }
 };

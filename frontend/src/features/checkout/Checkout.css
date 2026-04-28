@@ -2,7 +2,7 @@
 
 .checkout-page {
   padding: 20px;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -12,13 +12,17 @@
 }
 
 .checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+  align-items: start;
+}
+
+.checkout-form {
   background: white;
   border-radius: 8px;
   padding: 30px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.checkout-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -104,6 +108,108 @@
 
 .cancel-button:hover {
   background: #7f8c8d;
+}
+
+.cancel-button:hover {
+  background: #7f8c8d;
+}
+
+/* Order Summary Sidebar */
+.order-summary-sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 80px;
+}
+
+.order-summary-sidebar h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.3em;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item-info {
+  flex: 1;
+}
+
+.item-name {
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95em;
+}
+
+.item-details {
+  margin: 0;
+  color: #666;
+  font-size: 0.85em;
+}
+
+.item-subtotal {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 15px 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.free-text {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #000;
+  margin-top: 10px;
+}
+
+@media (max-width: 992px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary-sidebar {
+    position: static;
+    order: -1; /* Show summary first on mobile */
+  }
 }
 
 @media (max-width: 768px) {

@@ -6,6 +6,7 @@ import { Profile } from "../features/profile";
 import { Dashboard } from "../features/dashboard";
 import { OrderList, OrderDetails } from "../features/order";
 import { Checkout } from "../features/checkout";
+import { Cart } from "../features/cart";
 import { Home } from "../features/home";
 
 export default function AppRoutes() {
@@ -17,7 +18,8 @@ export default function AppRoutes() {
         <Route path="/products" element={<ProductList />} />
         <Route path="/add" element={<AddProduct />} />
         <Route path="/update/:id" element={<Update />} />
-        <Route path="/checkout/:id" element={<Checkout />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<OrderList />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />

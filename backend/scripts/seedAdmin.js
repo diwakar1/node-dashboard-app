@@ -34,7 +34,7 @@ async function seedAdmin() {
             console.log('Admin user already exists. Updating role...');
             existingAdmin.role = 'admin';
             await existingAdmin.save();
-            console.log('✅ Admin role updated for:', adminUser.email);
+            console.log('Admin role updated for:', adminUser.email);
         } else {
             // Create new admin user
             const hashedPassword = await bcrypt.hash(adminUser.password, 10);
@@ -47,17 +47,11 @@ async function seedAdmin() {
             });
 
             await admin.save();
-            console.log('✅ Admin user created successfully!');
+            console.log('Admin user created successfully!');
         }
-
-        console.log('\nAdmin Credentials:');
-        console.log('Email:', adminUser.email);
-        console.log('Password:', adminUser.password);
-        console.log('\n⚠️  Please change the password after first login!');
-
         process.exit(0);
     } catch (error) {
-        console.error('❌ Failed to create admin user:', error);
+        console.error('Failed to create admin user:', error);
         process.exit(1);
     }
 }
