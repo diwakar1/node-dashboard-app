@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext.js";
 import { useCart } from "../../../context/CartContext.js";
 import "./nav.css";
@@ -8,102 +8,99 @@ const Nav = () => {
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
   const { getCartCount } = useCart();
   const cartCount = getCartCount();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div style={{ width: "100%" }}>
-      {isAuthenticated ? (
-        <ul
-          className="nav-ul"
-          style={{
-            padding: "10px",
-            margin: "0px",
-            background: "skyblue",
-            width: "100%",
-            listStyle: "none",
-          }}
-        >
+    <nav className="navbar">
+      <div className="navbar-inner">
+
+        {/* ── Left: Logo + Brand ── */}
+        <Link to={isAuthenticated ? "/products" : "/"} className="navbar-brand">
           <img
             alt="logo"
-            className="logo"
+            className="navbar-logo"
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0gPJykZBs1LuZ6nlqACM_Mn6nub1n_cKtfA&s"
           />
-          {/* Admin-only navigation */}
-          {isAdmin() && (
-            <>
-              <li>
-                <Link to="/dashboard">Dashboard</Link>
-              </li>
-              <li>
-                <Link to="/add">Add Product</Link>
-              </li>
-            </>
-          )}
-          {/* Common navigation for all authenticated users */}
-          <li>
-            <Link to="/products">Products</Link>
-          </li>
-          {/* Cart - User-only */}
-          {!isAdmin() && (
-            <li style={{ position: 'relative' }}>
-              <Link to="/cart" style={{ position: 'relative' }}>
-                <i className="fa-solid fa-shopping-cart"></i> Cart
-                {cartCount > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    right: '-10px',
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '2px 6px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    minWidth: '18px',
-                    textAlign: 'center'
-                  }}>
-                    {cartCount}
-                  </span>
-                )}
+          <span className="navbar-brand-name">ShopDash</span>
+        </Link>
+
+        {/* ── Center: Nav Links ── */}
+        {isAuthenticated ? (
+          <ul className={`navbar-links ${menuOpen ? "open" : ""}`}>
+            {isAdmin() && (
+              <>
+                <li>
+                  <Link to="/dashboard" className={`nav-link ${isActive("/dashboard") ? "active" : ""}`}>
+                    <i className="fa-solid fa-gauge-high"></i> Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/add" className={`nav-link ${isActive("/add") ? "active" : ""}`}>
+                    <i className="fa-solid fa-plus"></i> Add Product
+                  </Link>
+                </li>
+              </>
+            )}
+            <li>
+              <Link to="/products" className={`nav-link ${isActive("/products") ? "active" : ""}`}>
+                <i className="fa-solid fa-store"></i> Products
               </Link>
             </li>
-          )}
-          {/* User-only navigation */}
-          {!isAdmin() && (
             <li>
-              <Link to="/orders">My Orders</Link>
+              <Link to="/orders" className={`nav-link ${isActive("/orders") ? "active" : ""}`}>
+                <i className="fa-solid fa-bag-shopping"></i>
+                {isAdmin() ? " All Orders" : " My Orders"}
+              </Link>
             </li>
-          )}
-          {/* Admin can see all orders */}
-          {isAdmin() && (
-            <li>
-              <Link to="/orders">All Orders</Link>
-            </li>
-          )}
-          <li>
-            <Link to="/profile">Profile</Link>
-          </li>
-          <li>
-            <Link onClick={logout} to="/login" className="nav-logout-link">
-              Logout ({user.name ? user.name : ""}) 
+          </ul>
+        ) : (
+          <ul className="navbar-links">
+            <li><Link to="/login" className="nav-link">Login</Link></li>
+            <li><Link to="/signup" className="nav-link nav-link-signup">Sign Up</Link></li>
+          </ul>
+        )}
+
+        {/* ── Right: Actions ── */}
+        {isAuthenticated && (
+          <div className="navbar-actions">
+            {/* Cart – user only */}
+            {!isAdmin() && (
+              <Link to="/cart" className={`nav-action-btn nav-cart ${isActive("/cart") ? "active" : ""}`}>
+                <i className="fa-solid fa-cart-shopping"></i>
+                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                <span className="nav-action-label">Cart</span>
+              </Link>
+            )}
+
+            {/* Profile */}
+            <Link to="/profile" className={`nav-action-btn nav-profile ${isActive("/profile") ? "active" : ""}`}>
+              <i className="fa-solid fa-circle-user"></i>
+              <span className="nav-action-label">{user?.name?.split(" ")[0] || "Profile"}</span>
             </Link>
-          </li>
-        </ul>
-      ) : (
-          <div className="nav-bar">
-            <div className="nav-left">
-              <img
-                alt="logo"
-                className="logo"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0gPJykZBs1LuZ6nlqACM_Mn6nub1n_cKtfA&s"
-              />
-            </div>
-            <div className="nav-right">
-              <Link to="/signup" className="nav-auth-link">Sign Up</Link>
-              <Link to="/login" className="nav-auth-link">Login</Link>
-            </div>
+
+            {/* Logout */}
+            <button
+              className="nav-logout-btn"
+              onClick={logout}
+            >
+              <i className="fa-solid fa-right-from-bracket"></i>
+              <span className="nav-action-label">Logout</span>
+            </button>
           </div>
-      )}
-    </div>
+        )}
+
+        {/* ── Hamburger (mobile) ── */}
+        {isAuthenticated && (
+          <button className="navbar-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
+            <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`}></i>
+          </button>
+        )}
+      </div>
+    </nav>
   );
 };
+
 export default Nav;
