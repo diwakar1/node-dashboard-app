@@ -66,8 +66,12 @@ export const useOrders = () => {
       if (response.success) {
         return { success: true, order: response.order };
       } else {
-        setError(response.error || 'Failed to create order');
-        return { success: false, error: response.error };
+        // Handle both { error: 'msg' } and { errors: [{msg:'...'},...] } formats
+        const errorMsg = response.error ||
+          (Array.isArray(response.errors) && response.errors.map(e => e.msg).join(', ')) ||
+          'Failed to create order';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
       }
     } catch (err) {
       setError('Network error');

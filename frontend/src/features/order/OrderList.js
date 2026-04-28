@@ -1,7 +1,7 @@
 /**
  * OrderList.js
  * Displays list of orders
- * - Users see their own orders
+ * - Users see their own orders with a status timeline
  * - Admins see all orders with ability to update status
  */
 import React, { useEffect, useState } from 'react';
@@ -10,38 +10,53 @@ import { useOrders } from '../../hooks/useOrders';
 import { useAuth } from '../../context/AuthContext';
 import './Order.css';
 
+const STATUS_STEPS = ['pending', 'confirmed', 'shipped', 'delivered'];
+
+const STATUS_META = {
+  pending:   { label: 'Pending',   icon: 'fa-clock',            color: '#FFA500' },
+  confirmed: { label: 'Confirmed', icon: 'fa-circle-check',     color: '#4169E1' },
+  shipped:   { label: 'Shipped',   icon: 'fa-truck',            color: '#9370DB' },
+  delivered: { label: 'Delivered', icon: 'fa-box-open',         color: '#28a745' },
+  cancelled: { label: 'Cancelled', icon: 'fa-circle-xmark',     color: '#DC143C' },
+};
+
+const NEXT_STATUS = {
+  pending:   'confirmed',
+  confirmed: 'shipped',
+  shipped:   'delivered',
+};
+
 const OrderList = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const { orders, loading, error, fetchOrders, updateStatus } = useOrders();
   const [statusFilter, setStatusFilter] = useState('all');
+  const [feedback, setFeedback] = useState({}); // { [orderId]: { type, msg } }
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  const showFeedback = (orderId, type, msg) => {
+    setFeedback(prev => ({ ...prev, [orderId]: { type, msg } }));
+    setTimeout(() => setFeedback(prev => {
+      const next = { ...prev };
+      delete next[orderId];
+      return next;
+    }), 3000);
+  };
+
   const handleStatusUpdate = async (orderId, newStatus) => {
     const result = await updateStatus(orderId, newStatus);
     if (result.success) {
-      alert('Order status updated successfully');
+      showFeedback(orderId, 'success', `Status updated to ${STATUS_META[newStatus].label}`);
     } else {
-      alert(`Failed to update status: ${result.error}`);
+      showFeedback(orderId, 'error', result.error || 'Failed to update status');
     }
   };
 
-  const getStatusColor = (status) => {
-    const colors = {
-      pending: '#FFA500',
-      confirmed: '#4169E1',
-      shipped: '#9370DB',
-      delivered: '#32CD32',
-      cancelled: '#DC143C'
-    };
-    return colors[status] || '#666';
-  };
-
-  const filteredOrders = statusFilter === 'all' 
-    ? orders 
+  const filteredOrders = statusFilter === 'all'
+    ? orders
     : orders.filter(order => order.status === statusFilter);
 
   if (loading && orders.length === 0) {
@@ -53,19 +68,16 @@ const OrderList = () => {
       <div className="order-list">
         <div className="order-header">
           <h2>{isAdmin() ? 'All Orders' : 'My Orders'}</h2>
-          
           <div className="order-filters">
-            <select 
-              value={statusFilter} 
+            <select
+              value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="status-filter"
             >
               <option value="all">All Orders</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
+              {Object.entries(STATUS_META).map(([val, { label }]) => (
+                <option key={val} value={val}>{label}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -81,81 +93,121 @@ const OrderList = () => {
           </div>
         ) : (
           <div className="orders-grid">
-            {filteredOrders.map((order) => (
-              <div key={order._id} className="order-card">
-                <div className="order-card-header">
-                  <div>
-                    <h3>Order #{order._id.slice(-8)}</h3>
-                    {isAdmin() && order.userId && (
-                      <p className="order-customer">
-                        Customer: {order.userId.name} ({order.userId.email})
-                      </p>
-                    )}
-                  </div>
-                  <span 
-                    className="order-status-badge"
-                    style={{ backgroundColor: getStatusColor(order.status) }}
-                  >
-                    {order.status.toUpperCase()}
-                  </span>
-                </div>
+            {filteredOrders.map((order) => {
+              const meta = STATUS_META[order.status] || STATUS_META.pending;
+              const isCancelled = order.status === 'cancelled';
+              const activeStep = isCancelled ? -1 : STATUS_STEPS.indexOf(order.status);
 
-                <div className="order-items">
-                  <h4>Items ({order.items.length})</h4>
-                  {order.items.map((item, index) => (
-                    <div key={index} className="order-item">
-                      <span>{item.name}</span>
-                      <span>Qty: {item.quantity}</span>
-                      <span>${item.price.toFixed(2)}</span>
+              return (
+                <div key={order._id} className="order-card">
+                  {/* Header */}
+                  <div className="order-card-header">
+                    <div>
+                      <h3>Order #{order._id.slice(-8).toUpperCase()}</h3>
+                      <small className="order-date">
+                        {new Date(order.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric', month: 'short', day: 'numeric'
+                        })}
+                      </small>
+                      {isAdmin() && order.userId && (
+                        <p className="order-customer">
+                          <i className="fa-solid fa-user"></i> {order.userId.name} ({order.userId.email})
+                        </p>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <span className="order-status-badge" style={{ backgroundColor: meta.color }}>
+                      <i className={`fa-solid ${meta.icon}`}></i> {meta.label}
+                    </span>
+                  </div>
 
-                <div className="order-details">
+                  {/* Status Timeline */}
+                  {!isCancelled ? (
+                    <div className="status-timeline">
+                      {STATUS_STEPS.map((step, idx) => {
+                        const done = idx <= activeStep;
+                        const current = idx === activeStep;
+                        return (
+                          <React.Fragment key={step}>
+                            <div className={`timeline-step ${done ? 'done' : ''} ${current ? 'current' : ''}`}>
+                              <div className="timeline-dot" style={{ backgroundColor: done ? STATUS_META[step].color : '#ddd' }}>
+                                <i className={`fa-solid ${STATUS_META[step].icon}`}></i>
+                              </div>
+                              <span className="timeline-label">{STATUS_META[step].label}</span>
+                            </div>
+                            {idx < STATUS_STEPS.length - 1 && (
+                              <div className={`timeline-line ${idx < activeStep ? 'done' : ''}`}></div>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="cancelled-banner">
+                      <i className="fa-solid fa-circle-xmark"></i> This order was cancelled
+                    </div>
+                  )}
+
+                  {/* Items */}
+                  <div className="order-items">
+                    <h4>Items ({order.items.length})</h4>
+                    {order.items.map((item, index) => (
+                      <div key={index} className="order-item">
+                        <span>{item.name}</span>
+                        <span>×{item.quantity}</span>
+                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Total + Payment */}
                   <div className="order-total">
-                    <strong>Total:</strong>
+                    <strong>Total</strong>
                     <strong>${order.totalAmount.toFixed(2)}</strong>
                   </div>
-                  
-                  <div className="order-shipping">
-                    <strong>Shipping Address:</strong>
-                    <p>
-                      {order.shippingAddress.fullName}<br />
-                      {order.shippingAddress.address}<br />
-                      {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}<br />
-                      Phone: {order.shippingAddress.phone}
-                    </p>
-                  </div>
-
                   <div className="order-meta">
-                    <small>Payment: {order.paymentMethod.toUpperCase()}</small>
-                    <small>Placed: {new Date(order.createdAt).toLocaleDateString()}</small>
+                    <small><i className="fa-solid fa-credit-card"></i> {order.paymentMethod.toUpperCase()}</small>
+                    <small><i className="fa-solid fa-location-dot"></i> {order.shippingAddress.city}, {order.shippingAddress.state}</small>
+                  </div>
+
+                  {/* Inline feedback */}
+                  {feedback[order._id] && (
+                    <div className={`order-feedback ${feedback[order._id].type}`}>
+                      <i className={`fa-solid ${feedback[order._id].type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`}></i>
+                      {' '}{feedback[order._id].msg}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="order-actions">
+                    <button
+                      onClick={() => navigate(`/orders/${order._id}`)}
+                      className="appButton view-button"
+                    >
+                      <i className="fa-solid fa-eye"></i> Details
+                    </button>
+
+                    {isAdmin() && !isCancelled && order.status !== 'delivered' && (
+                      <>
+                        {NEXT_STATUS[order.status] && (
+                          <button
+                            className="status-next-btn"
+                            onClick={() => handleStatusUpdate(order._id, NEXT_STATUS[order.status])}
+                          >
+                            <i className="fa-solid fa-arrow-right"></i> Mark {STATUS_META[NEXT_STATUS[order.status]].label}
+                          </button>
+                        )}
+                        <button
+                          className="status-cancel-btn"
+                          onClick={() => handleStatusUpdate(order._id, 'cancelled')}
+                        >
+                          <i className="fa-solid fa-ban"></i> Cancel
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
-
-                <div className="order-actions">
-                  <button 
-                    onClick={() => navigate(`/orders/${order._id}`)}
-                    className="appButton view-button"
-                  >
-                    View Details
-                  </button>
-
-                  {isAdmin() && order.status !== 'cancelled' && order.status !== 'delivered' && (
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                      className="status-update-select"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                    </select>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@
  * Cart.js
  * Shopping cart page showing all items with quantity controls
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import './Cart.css';
@@ -17,6 +17,23 @@ const Cart = () => {
         getCartTotal,
         getCartCount 
     } = useCart();
+
+    // Confirmation dialog state
+    const [confirmDialog, setConfirmDialog] = useState(null);
+    // { message, onConfirm }
+
+    const showConfirm = (message, onConfirm) => {
+        setConfirmDialog({ message, onConfirm });
+    };
+
+    const handleConfirmYes = () => {
+        if (confirmDialog) confirmDialog.onConfirm();
+        setConfirmDialog(null);
+    };
+
+    const handleConfirmNo = () => {
+        setConfirmDialog(null);
+    };
 
     const handleQuantityChange = (productId, newQuantity) => {
         const qty = parseInt(newQuantity);
@@ -36,15 +53,11 @@ const Cart = () => {
     };
 
     const handleRemove = (productId, productName) => {
-        if (window.confirm(`Remove "${productName}" from cart?`)) {
-            removeFromCart(productId);
-        }
+        showConfirm(`Remove "${productName}" from cart?`, () => removeFromCart(productId));
     };
 
     const handleClearCart = () => {
-        if (window.confirm('Clear all items from cart?')) {
-            clearCart();
-        }
+        showConfirm('Clear all items from cart?', () => clearCart());
     };
 
     const handleCheckout = () => {
@@ -68,6 +81,26 @@ const Cart = () => {
 
     return (
         <div className="container">
+            {/* Custom Confirmation Dialog */}
+            {confirmDialog && (
+                <div className="cart-modal-overlay">
+                    <div className="cart-confirm-dialog">
+                        <div className="cart-confirm-icon">
+                            <i className="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <p className="cart-confirm-message">{confirmDialog.message}</p>
+                        <div className="cart-confirm-actions">
+                            <button className="cart-confirm-no" onClick={handleConfirmNo}>
+                                Cancel
+                            </button>
+                            <button className="cart-confirm-yes" onClick={handleConfirmYes}>
+                                Yes, Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="cart-container">
                 <div className="cart-header">
                     <h1>Shopping Cart</h1>
@@ -102,7 +135,7 @@ const Cart = () => {
                                         className="qty-btn"
                                         disabled={item.quantity <= 0}
                                     >
-                                        <i className="fa-solid fa-minus">-</i>
+                                        <i className="fa-solid fa-minus"></i>
                                     </button>
                                     <input
                                         type="number"
@@ -115,7 +148,7 @@ const Cart = () => {
                                         onClick={() => handleIncrement(item._id, item.quantity)}
                                         className="qty-btn"
                                     >
-                                        <i className="fa-solid fa-plus">+</i>
+                                        <i className="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
 

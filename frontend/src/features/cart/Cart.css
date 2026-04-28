@@ -213,6 +213,85 @@
     color: white;
 }
 
+/* ── Cart Confirm Dialog ── */
+.cart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cart-confirm-dialog {
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+  animation: cartDialogPop 0.25s ease;
+}
+
+@keyframes cartDialogPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.cart-confirm-icon {
+  font-size: 44px;
+  color: #e67e22;
+  margin-bottom: 14px;
+}
+
+.cart-confirm-message {
+  font-size: 1em;
+  color: #333;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.cart-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cart-confirm-no {
+  flex: 1;
+  padding: 10px 16px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  color: #555;
+  transition: background 0.2s;
+}
+
+.cart-confirm-no:hover {
+  background: #e0e0e0;
+}
+
+.cart-confirm-yes {
+  flex: 1;
+  padding: 10px 16px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cart-confirm-yes:hover {
+  background: #c82333;
+}
+
 /* Cart Summary */
 .cart-summary {
     background: white;

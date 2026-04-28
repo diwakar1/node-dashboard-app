@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useProducts } from "../../hooks/useProducts";
 import { useAuth } from "../../context/AuthContext";
@@ -10,36 +10,62 @@ const ProductList = () => {
 	const categoryId = new URLSearchParams(location.search).get("category");
 	const { products, loading, error, removeProduct, searchProductsByKey, loadProducts, loadProductsByCategory } = useProducts({ autoLoad: false });
 	const { isAdmin } = useAuth();
-	const { addToCart, isInCart } = useCart();
+	const { addToCart, isInCart, getCartCount } = useCart();
+
+	const [cartDialog, setCartDialog] = useState(null); // { productName }
 
 	useEffect(() => {
 		if (categoryId) {
-			console.log("Loading products for category:", categoryId);
 			loadProductsByCategory(categoryId);
 		} else {
 			loadProducts();
 		}
 	}, [categoryId, loadProductsByCategory, loadProducts]);
 
-  const handleSearch = (event) => {
-    searchProductsByKey(event.target.value);
-  };
+	const handleSearch = (event) => {
+		searchProductsByKey(event.target.value);
+	};
 
-  const handleDelete = async (id) => {
-    await removeProduct(id);
-  };
+	const handleDelete = async (id) => {
+		await removeProduct(id);
+	};
 
 	const handleAddToCart = (product) => {
 		addToCart(product, 1);
-		// Show success message
-		const message = `"${product.name}" added to cart!`;
-		if (window.confirm(`${message}\n\nGo to cart now?`)) {
-			navigate('/cart');
-		}
+		setCartDialog({ productName: product.name });
 	};
 
 	return (
 		<div className="product-list">
+
+			{/* ── Add to Cart Dialog ── */}
+			{cartDialog && (
+				<div className="cart-modal-overlay">
+					<div className="cart-confirm-dialog">
+						<div className="cart-confirm-icon" style={{ color: '#28a745' }}>
+							<i className="fa-solid fa-circle-check"></i>
+						</div>
+						<p className="cart-confirm-message">
+							<strong>"{cartDialog.productName}"</strong> was added to your cart!
+						</p>
+						<div className="cart-confirm-actions">
+							<button
+								className="cart-confirm-no"
+								onClick={() => setCartDialog(null)}
+							>
+								Continue Shopping
+							</button>
+							<button
+								className="cart-confirm-yes"
+								style={{ background: '#28a745' }}
+								onClick={() => { setCartDialog(null); navigate('/cart'); }}
+							>
+								<i className="fa-solid fa-cart-shopping"></i> Go to Cart ({getCartCount()})
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 			<h3>Products Details</h3>
 			<input type="" className="search-product-box" placeholder="search Prodct" onChange={handleSearch}/>
 			{loading && <p>Loading products...</p>}

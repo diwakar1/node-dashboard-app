@@ -201,6 +201,203 @@
   margin-top: 10px;
 }
 
+/* ── Order Success Modal ── */
+.order-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.order-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: modalPop 0.3s ease;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.order-modal-icon {
+  font-size: 60px;
+  color: #28a745;
+  margin-bottom: 16px;
+}
+
+.order-modal h2 {
+  margin: 0 0 8px;
+  color: #222;
+  font-size: 1.6em;
+}
+
+.order-modal-sub {
+  color: #666;
+  margin-bottom: 24px;
+  font-size: 0.95em;
+}
+
+.order-modal-details {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.order-modal-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.95em;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.order-modal-row:last-child {
+  border-bottom: none;
+}
+
+.order-modal-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.order-modal-total {
+  font-size: 1.1em !important;
+  font-weight: bold;
+  color: #000 !important;
+  margin-top: 4px;
+}
+
+.order-modal-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1em;
+  margin-bottom: 12px;
+}
+
+.continue-link {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-decoration: underline;
+  padding: 4px;
+}
+
+/* ── Order Error Banner ── */
+.order-error-banner {
+  background: #fff0f0;
+  border: 1px solid #f5c6cb;
+  color: #c82333;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 0.95em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Mock Credit Card ── */
+.card-payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mock-card-preview {
+  background: linear-gradient(135deg, #434190 0%, #6c63ff 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 8px 24px rgba(108,99,255,0.35);
+  position: relative;
+  user-select: none;
+}
+
+.mock-card-chip {
+  font-size: 28px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.mock-card-number {
+  font-family: 'Courier New', monospace;
+  font-size: 1.3em;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.mock-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.mock-card-label {
+  font-size: 0.65em;
+  opacity: 0.7;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.mock-card-holder,
+.mock-card-expiry {
+  font-size: 0.95em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card-input-group label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.card-mock-note {
+  font-size: 0.8em;
+  color: #888;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── COD Info ── */
+.cod-info {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95em;
+}
+
 @media (max-width: 992px) {
   .checkout-layout {
     grid-template-columns: 1fr;

@@ -46,9 +46,9 @@ export const hashPassword = async (plain) => {
 
 // Generate access token (short-lived)
 export const generateAccessToken = (user, secret) => {
-    // Store only essential data in token payload
+    // Support both a DB user object (_id) and a decoded token payload (userId)
     const payload = {
-        userId: user._id,
+        userId: user._id || user.userId,
         email: user.email,
         role: user.role
     };
@@ -57,9 +57,9 @@ export const generateAccessToken = (user, secret) => {
 
 // Generate refresh token (longer-lived)
 export const generateRefreshToken = (user, refreshSecret) => {
-    // Store only essential data in token payload
+    // Support both a DB user object (_id) and a decoded token payload (userId)
     const payload = {
-        userId: user._id,
+        userId: user._id || user.userId,
         email: user.email,
         role: user.role
     };

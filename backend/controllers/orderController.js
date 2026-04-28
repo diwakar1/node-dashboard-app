@@ -27,6 +27,11 @@ export const createOrder = async (req, res) => {
         const { items, shippingAddress, paymentMethod, notes } = req.body;
         const userId = req.user.userId;
 
+        if (!userId) {
+            log('Missing userId in token for:', req.user.email);
+            return res.status(401).json({ error: 'Session expired. Please log out and log in again.' });
+        }
+
         // Validate and calculate total
         let totalAmount = 0;
         const orderItems = [];
