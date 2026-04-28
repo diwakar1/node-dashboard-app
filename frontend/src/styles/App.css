@@ -492,11 +492,76 @@ padding: 1rem;
   gap: 5px;
 }
 
+.product-card-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .product-card-price {
   font-size: 1.25em;
   font-weight: 800;
   color: #27ae60;
-  margin-top: 6px;
+}
+
+/* ── Qty stepper (next to price) ── */
+.product-qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid #27ae60;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.qty-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 0.78em;
+  color: #27ae60;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.qty-btn:hover {
+  background: #e8f8ee;
+}
+
+.qty-value {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 700;
+  color: #222;
+}
+
+/* View Cart button */
+.in-cart-btn {
+  width: 100%;
+  padding: 8px 14px;
+  background: #e8f8ee;
+  color: #27ae60;
+  border: 1.5px solid #27ae60;
+  border-radius: 8px;
+  font-size: 0.88em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.in-cart-btn:hover {
+  background: #27ae60;
+  color: #fff;
 }
 
 .product-card-footer {
