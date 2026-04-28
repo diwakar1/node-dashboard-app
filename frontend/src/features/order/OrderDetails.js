@@ -1,12 +1,28 @@
 /**
  * OrderDetails.js
- * Detailed view of a single order
+ * Detailed view of a single order — Amazon-style layout
  */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuth } from '../../context/AuthContext';
 import './Order.css';
+
+const STATUS_STEPS = ['pending', 'confirmed', 'shipped', 'delivered'];
+
+const STATUS_META = {
+  pending:   { label: 'Pending',   icon: 'fa-clock',         color: '#FFA500' },
+  confirmed: { label: 'Confirmed', icon: 'fa-circle-check',  color: '#4169E1' },
+  shipped:   { label: 'Shipped',   icon: 'fa-truck',         color: '#9370DB' },
+  delivered: { label: 'Delivered', icon: 'fa-box-open',      color: '#28a745' },
+  cancelled: { label: 'Cancelled', icon: 'fa-circle-xmark',  color: '#DC143C' },
+};
+
+const NEXT_STATUS = {
+  pending:   'confirmed',
+  confirmed: 'shipped',
+  shipped:   'delivered',
+};
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -16,6 +32,7 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     loadOrder();
@@ -32,17 +49,19 @@ const OrderDetails = () => {
     setLoading(false);
   };
 
-  const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) {
-      return;
-    }
+  const showFeedback = (type, msg) => {
+    setFeedback({ type, msg });
+    setTimeout(() => setFeedback(null), 3500);
+  };
 
+  const handleCancelOrder = async () => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
     const result = await cancelOrder(id);
     if (result.success) {
-      alert('Order cancelled successfully');
-      navigate('/orders');
+      setOrder(prev => ({ ...prev, status: 'cancelled' }));
+      showFeedback('success', 'Order cancelled successfully.');
     } else {
-      alert(`Failed to cancel order: ${result.error}`);
+      showFeedback('error', result.error || 'Failed to cancel order.');
     }
   };
 
@@ -50,131 +69,249 @@ const OrderDetails = () => {
     const result = await updateStatus(id, newStatus);
     if (result.success) {
       setOrder(prev => ({ ...prev, status: newStatus }));
-      alert('Order status updated successfully');
+      showFeedback('success', `Status updated to ${STATUS_META[newStatus].label}.`);
     } else {
-      alert(`Failed to update status: ${result.error}`);
+      showFeedback('error', result.error || 'Failed to update status.');
     }
   };
 
   if (loading) {
-    return <div className="container"><p>Loading order details...</p></div>;
+    return (
+      <div className="od-loading">
+        <i className="fa-solid fa-spinner fa-spin"></i> Loading order details…
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="container">
-        <div className="error-message">{error}</div>
-        <button onClick={() => navigate('/orders')} className="appButton">
-          Back to Orders
+      <div className="od-error-page">
+        <i className="fa-solid fa-triangle-exclamation"></i>
+        <p>{error}</p>
+        <button onClick={() => navigate('/orders')} className="od-back-link">
+          ← Back to Orders
         </button>
       </div>
     );
   }
 
   if (!order) {
-    return <div className="container"><p>Order not found</p></div>;
+    return (
+      <div className="od-error-page">
+        <p>Order not found.</p>
+        <button onClick={() => navigate('/orders')} className="od-back-link">← Back to Orders</button>
+      </div>
+    );
   }
 
-  const canCancel = ['pending', 'confirmed'].includes(order.status);
+  const isCancelled = order.status === 'cancelled';
+  const activeStep  = isCancelled ? -1 : STATUS_STEPS.indexOf(order.status);
+  const meta        = STATUS_META[order.status] || STATUS_META.pending;
+  const canCancel   = !isAdmin() && ['pending', 'confirmed'].includes(order.status);
+  const nextStatus  = NEXT_STATUS[order.status];
+
+  const itemsSubtotal = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   return (
-    <div className="container">
-      <div className="order-details-page">
-        <div className="order-details-header">
-          <button onClick={() => navigate('/orders')} className="back-button">
-            ← Back to Orders
-          </button>
-          <h2>Order Details</h2>
-        </div>
+    <div className="od-page">
 
-        <div className="order-info-card">
-          <div className="order-info-section">
-            <h3>Order Information</h3>
-            <p><strong>Order ID:</strong> {order._id}</p>
-            <p><strong>Status:</strong> <span className={`status-${order.status}`}>{order.status.toUpperCase()}</span></p>
-            <p><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
-            <p><strong>Payment Method:</strong> {order.paymentMethod.toUpperCase()}</p>
-            <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
-            {order.notes && <p><strong>Notes:</strong> {order.notes}</p>}
+      {/* ── Breadcrumb / Back ── */}
+      <div className="od-breadcrumb">
+        <button onClick={() => navigate('/orders')} className="od-back-link">
+          <i className="fa-solid fa-arrow-left"></i> Back to Orders
+        </button>
+        <span className="od-breadcrumb-sep">/</span>
+        <span>Order #{order._id.slice(-8).toUpperCase()}</span>
+      </div>
+
+      {/* ── Page Header ── */}
+      <div className="od-page-header">
+        <div>
+          <h1 className="od-page-title">Order Details</h1>
+          <p className="od-page-sub">
+            Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
+              weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            })}
+          </p>
+        </div>
+        <div className="od-header-badge" style={{ backgroundColor: meta.color }}>
+          <i className={`fa-solid ${meta.icon}`}></i> {meta.label}
+        </div>
+      </div>
+
+      {/* ── Inline Feedback ── */}
+      {feedback && (
+        <div className={`od-feedback od-feedback-${feedback.type}`}>
+          <i className={`fa-solid ${feedback.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`}></i>
+          {' '}{feedback.msg}
+        </div>
+      )}
+
+      {/* ── Status Progress Bar ── */}
+      <div className="od-status-card">
+        {isCancelled ? (
+          <div className="od-cancelled-banner">
+            <i className="fa-solid fa-circle-xmark"></i>
+            <div>
+              <strong>Order Cancelled</strong>
+              <p>This order has been cancelled and will not be shipped.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h2 className="od-section-title">
+              <i className="fa-solid fa-route"></i> Order Status
+            </h2>
+            <div className="od-timeline">
+              {STATUS_STEPS.map((step, idx) => {
+                const done    = idx <= activeStep;
+                const current = idx === activeStep;
+                const sm      = STATUS_META[step];
+                return (
+                  <React.Fragment key={step}>
+                    <div className={`od-tstep ${done ? 'done' : ''} ${current ? 'current' : ''}`}>
+                      <div
+                        className="od-tdot"
+                        style={{ backgroundColor: done ? sm.color : '#e0e0e0', color: done ? '#fff' : '#aaa' }}
+                      >
+                        <i className={`fa-solid ${sm.icon}`}></i>
+                      </div>
+                      <span className="od-tlabel">{sm.label}</span>
+                    </div>
+                    {idx < STATUS_STEPS.length - 1 && (
+                      <div className={`od-tline ${idx < activeStep ? 'done' : ''}`}></div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* ── Main Body: 2 columns ── */}
+      <div className="od-body">
+
+        {/* Left column */}
+        <div className="od-left">
+
+          {/* Shipping Address */}
+          <div className="od-card">
+            <h2 className="od-section-title">
+              <i className="fa-solid fa-location-dot"></i> Shipping Address
+            </h2>
+            <div className="od-address-block">
+              <p className="od-address-name">{order.shippingAddress.fullName}</p>
+              <p>{order.shippingAddress.address}</p>
+              <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
+              <p className="od-address-phone">
+                <i className="fa-solid fa-phone"></i> {order.shippingAddress.phone}
+              </p>
+            </div>
           </div>
 
+          {/* Payment Method */}
+          <div className="od-card">
+            <h2 className="od-section-title">
+              <i className="fa-solid fa-credit-card"></i> Payment Method
+            </h2>
+            <p className="od-payment-method">
+              <i className="fa-solid fa-wallet"></i>
+              {' '}{order.paymentMethod.toUpperCase()}
+            </p>
+            {order.notes && (
+              <p className="od-notes">
+                <i className="fa-solid fa-note-sticky"></i> {order.notes}
+              </p>
+            )}
+          </div>
+
+          {/* Customer Info (admin only) */}
           {isAdmin() && order.userId && (
-            <div className="order-info-section">
-              <h3>Customer Information</h3>
-              <p><strong>Name:</strong> {order.userId.name}</p>
-              <p><strong>Email:</strong> {order.userId.email}</p>
+            <div className="od-card">
+              <h2 className="od-section-title">
+                <i className="fa-solid fa-user"></i> Customer
+              </h2>
+              <p className="od-customer-name">{order.userId.name}</p>
+              <p className="od-customer-email">
+                <i className="fa-solid fa-envelope"></i> {order.userId.email}
+              </p>
             </div>
           )}
 
-          <div className="order-info-section">
-            <h3>Shipping Address</h3>
-            <p>{order.shippingAddress.fullName}</p>
-            <p>{order.shippingAddress.address}</p>
-            <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-            <p>Phone: {order.shippingAddress.phone}</p>
+          {/* Order Items */}
+          <div className="od-card">
+            <h2 className="od-section-title">
+              <i className="fa-solid fa-box"></i> Items Ordered
+              <span className="od-item-count">{order.items.length} item{order.items.length !== 1 ? 's' : ''}</span>
+            </h2>
+            <div className="od-items-list">
+              {order.items.map((item, index) => (
+                <div key={index} className="od-item-row">
+                  <div className="od-item-icon">
+                    <i className="fa-solid fa-cube"></i>
+                  </div>
+                  <div className="od-item-info">
+                    <p className="od-item-name">{item.name}</p>
+                    <p className="od-item-qty">Qty: {item.quantity}</p>
+                  </div>
+                  <div className="od-item-prices">
+                    <p className="od-item-unit">${item.price.toFixed(2)} each</p>
+                    <p className="od-item-subtotal">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="order-info-section">
-            <h3>Order Items</h3>
-            <table className="items-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.items.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.name}</td>
-                    <td>{item.quantity}</td>
-                    <td>${item.price.toFixed(2)}</td>
-                    <td>${(item.quantity * item.price).toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan="3"><strong>Total</strong></td>
-                  <td><strong>${order.totalAmount.toFixed(2)}</strong></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
         </div>
 
-        <div className="order-actions-section">
-          {!isAdmin() && canCancel && (
-            <button onClick={handleCancelOrder} className="cancel-button">
-              Cancel Order
-            </button>
-          )}
-
-          {isAdmin() && order.status !== 'cancelled' && order.status !== 'delivered' && (
-            <div className="admin-actions">
-              <h3>Update Order Status</h3>
-              <div className="status-buttons">
-                {order.status !== 'confirmed' && (
-                  <button onClick={() => handleStatusUpdate('confirmed')} className="appButton">
-                    Mark as Confirmed
-                  </button>
-                )}
-                {order.status !== 'shipped' && order.status !== 'pending' && (
-                  <button onClick={() => handleStatusUpdate('shipped')} className="appButton">
-                    Mark as Shipped
-                  </button>
-                )}
-                {order.status !== 'delivered' && order.status === 'shipped' && (
-                  <button onClick={() => handleStatusUpdate('delivered')} className="appButton">
-                    Mark as Delivered
-                  </button>
-                )}
+        {/* Right column — Order Summary */}
+        <div className="od-right">
+          <div className="od-summary-card">
+            <h2 className="od-section-title">
+              <i className="fa-solid fa-receipt"></i> Order Summary
+            </h2>
+            <div className="od-summary-id">
+              <span>Order #</span>
+              <span className="od-id-mono">{order._id.slice(-8).toUpperCase()}</span>
+            </div>
+            <div className="od-summary-rows">
+              <div className="od-summary-row">
+                <span>Items ({order.items.length})</span>
+                <span>${itemsSubtotal.toFixed(2)}</span>
+              </div>
+              <div className="od-summary-row">
+                <span>Shipping</span>
+                <span className="od-free-tag">FREE</span>
+              </div>
+              <div className="od-summary-row od-summary-total">
+                <span>Order Total</span>
+                <span>${order.totalAmount.toFixed(2)}</span>
               </div>
             </div>
-          )}
+
+            {/* Actions */}
+            <div className="od-summary-actions">
+              {canCancel && (
+                <button onClick={handleCancelOrder} className="od-btn-cancel">
+                  <i className="fa-solid fa-ban"></i> Cancel Order
+                </button>
+              )}
+
+              {isAdmin() && !isCancelled && order.status !== 'delivered' && nextStatus && (
+                <button
+                  onClick={() => handleStatusUpdate(nextStatus)}
+                  className="od-btn-advance"
+                >
+                  <i className="fa-solid fa-arrow-right"></i>
+                  {' '}Mark as {STATUS_META[nextStatus].label}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   );
