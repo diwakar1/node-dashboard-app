@@ -14,6 +14,7 @@ const ProductList = () => {
 
 	useEffect(() => {
 		if (categoryId) {
+			console.log("Loading products for category:", categoryId);
 			loadProductsByCategory(categoryId);
 		} else {
 			loadProducts();
