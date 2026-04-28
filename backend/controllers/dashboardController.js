@@ -6,6 +6,7 @@
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
+import Order from '../models/Order.js';
 import { handleControllerError } from '../utils/errorHandler.js';
 
 /**
@@ -23,6 +24,15 @@ async function getDashboardStats(req, res) {
     try {
         // Get total counts
         const totalProducts = await Product.countDocuments();
+        const totalUsers    = await User.countDocuments({ role: 'user' });
+        const totalOrders   = await Order.countDocuments();
+
+        // Revenue: sum of totalAmount on delivered orders
+        const revenueAgg = await Order.aggregate([
+            { $match: { status: 'delivered' } },
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        ]);
+        const totalRevenue = revenueAgg[0]?.total || 0;
         
         // Get unique companies count
         const companies = await Product.distinct('company');
@@ -72,8 +82,11 @@ async function getDashboardStats(req, res) {
         const stats = {
             overview: {
                 totalProducts,
-                totalCategories: productsByCategory.length, // Count only categories with products
-                totalCompanies
+                totalCategories: productsByCategory.length,
+                totalCompanies,
+                totalOrders,
+                totalUsers,
+                totalRevenue
             },
             categoryBreakdown: productsByCategory,
             recentProducts
