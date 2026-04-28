@@ -201,36 +201,46 @@ const Checkout = () => {
 
         <div className="checkout-layout">
           <div className="checkout-form">
-            <h3>Shipping Address</h3>
-            
-            <input
-              type="text"
-              className="inputBox"
-              placeholder="Full Name"
-              name="fullName"
-              value={values.fullName}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {errors.fullName && <span className="error">{errors.fullName}</span>}
+            <h3><i className="fa-solid fa-location-dot"></i> Shipping Address</h3>
 
-            <input
-              type="text"
-              className="inputBox"
-              placeholder="Address"
-              name="address"
-              value={values.address}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {errors.address && <span className="error">{errors.address}</span>}
-
-            <div className="form-row">
-              <div className="form-group">
+            <div className="address-grid">
+              {/* Full Name – full width */}
+              <div className="field-group full-width">
+                <label className="field-label">Full Name</label>
                 <input
                   type="text"
                   className="inputBox"
-                  placeholder="City"
+                  placeholder="John Doe"
+                  name="fullName"
+                  value={values.fullName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.fullName && <span className="error">{errors.fullName}</span>}
+              </div>
+
+              {/* Address – full width */}
+              <div className="field-group full-width">
+                <label className="field-label">Street Address</label>
+                <input
+                  type="text"
+                  className="inputBox"
+                  placeholder="123 Main St, Apt 4B"
+                  name="address"
+                  value={values.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.address && <span className="error">{errors.address}</span>}
+              </div>
+
+              {/* City */}
+              <div className="field-group">
+                <label className="field-label">City</label>
+                <input
+                  type="text"
+                  className="inputBox"
+                  placeholder="New York"
                   name="city"
                   value={values.city}
                   onChange={handleChange}
@@ -239,7 +249,9 @@ const Checkout = () => {
                 {errors.city && <span className="error">{errors.city}</span>}
               </div>
 
-              <div className="form-group">
+              {/* State */}
+              <div className="field-group">
+                <label className="field-label">State</label>
                 <select
                   className="inputBox"
                   name="state"
@@ -254,14 +266,14 @@ const Checkout = () => {
                 </select>
                 {errors.state && <span className="error">{errors.state}</span>}
               </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group">
+              {/* Zip Code */}
+              <div className="field-group">
+                <label className="field-label">Zip Code</label>
                 <input
                   type="text"
                   className="inputBox"
-                  placeholder="Zip Code"
+                  placeholder="10001"
                   name="zipCode"
                   value={values.zipCode}
                   onChange={handleChange}
@@ -270,11 +282,13 @@ const Checkout = () => {
                 {errors.zipCode && <span className="error">{errors.zipCode}</span>}
               </div>
 
-              <div className="form-group">
+              {/* Phone */}
+              <div className="field-group">
+                <label className="field-label">Phone Number</label>
                 <input
                   type="text"
                   className="inputBox"
-                  placeholder="Phone (10 digits)"
+                  placeholder="10-digit number"
                   name="phone"
                   value={values.phone}
                   onChange={handleChange}
@@ -284,7 +298,7 @@ const Checkout = () => {
               </div>
             </div>
 
-            <h3>Payment Method</h3>
+            <h3><i className="fa-solid fa-credit-card"></i> Payment Method</h3>
             <select
               className="inputBox"
               name="paymentMethod"
