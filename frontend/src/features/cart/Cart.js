@@ -68,7 +68,7 @@ const Cart = () => {
         return (
             <div className="cart-page">
                 <div className="cart-page__inner">
-                    <h1 className="cart-page__title">Shopping Cart</h1>
+                    <h1 className="cart-page__title" style={{ textAlign: 'center', justifyContent: 'center' }}>Shopping Cart</h1>
                     <div className="cart-empty">
                         <div className="cart-empty__icon">
                             <i className="fa-solid fa-cart-shopping"></i>
