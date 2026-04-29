@@ -18,6 +18,7 @@ const Checkout = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
+  const [cardName, setCardName] = useState('');
   const [cardErrors, setCardErrors] = useState({});
 
   // Success modal state
@@ -138,8 +139,19 @@ const Checkout = () => {
 
   const totalAmount = orderSuccess ? orderSuccess.totalAmount : getCartTotal();
 
+  const PAYMENT_OPTIONS = [
+    { value: 'cod',  icon: '💵', label: 'Cash on Delivery',      desc: 'Pay when your order arrives' },
+    { value: 'card', icon: '💳', label: 'Credit / Debit Card',   desc: 'Visa, Mastercard, Amex' },
+    { value: 'upi',  icon: '📱', label: 'UPI',                   desc: 'GPay, PhonePe, Paytm' },
+  ];
+
+  const paymentLabel = (method) => {
+    const opt = PAYMENT_OPTIONS.find(o => o.value === method);
+    return opt ? opt.label : method;
+  };
+
   return (
-    <div className="container">
+    <div className="checkout-page">
 
       {/* ── Order Success Modal ── */}
       {orderSuccess && (
@@ -148,11 +160,10 @@ const Checkout = () => {
             <div className="order-modal-icon">
               <i className="fa-solid fa-circle-check"></i>
             </div>
-            <h2>Order Placed Successfully!</h2>
+            <h2>Order Placed!</h2>
             <p className="order-modal-sub">
-              Thank you for your order. We'll get it ready for you soon.
+              Thank you for your purchase. We'll get it ready for you soon.
             </p>
-
             <div className="order-modal-details">
               <div className="order-modal-row">
                 <span>Order ID</span>
@@ -160,38 +171,38 @@ const Checkout = () => {
               </div>
               <div className="order-modal-row">
                 <span>Payment</span>
-                <span className="order-modal-value">
-                  {orderSuccess.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Credit / Debit Card'}
-                </span>
+                <span className="order-modal-value">{paymentLabel(orderSuccess.paymentMethod)}</span>
               </div>
               <div className="order-modal-row">
                 <span>Items</span>
                 <span className="order-modal-value">{orderSuccess.items.length}</span>
               </div>
               <div className="order-modal-row order-modal-total">
-                <span>Total</span>
+                <span>Order Total</span>
                 <span>${orderSuccess.totalAmount.toFixed(2)}</span>
               </div>
             </div>
-
-            <button
-              className="appButton order-modal-btn"
-              onClick={() => navigate('/orders')}
-            >
+            <button className="appButton order-modal-btn" onClick={() => navigate('/orders')}>
               <i className="fa-solid fa-bag-shopping"></i> View My Orders
             </button>
-            <button
-              className="continue-link"
-              onClick={() => navigate('/products')}
-            >
+            <button className="continue-link" onClick={() => navigate('/products')}>
               Continue Shopping
             </button>
           </div>
         </div>
       )}
 
-      <div className="checkout-page">
-        <h2>Checkout</h2>
+      <div className="checkout-page__inner">
+        {/* ── Breadcrumb steps ── */}
+        <div className="checkout-steps">
+          <span className="checkout-steps__step" onClick={() => navigate('/cart')} style={{ cursor: 'pointer' }}>Cart</span>
+          <span className="checkout-steps__sep">›</span>
+          <span className="checkout-steps__step checkout-steps__step--active">Checkout</span>
+          <span className="checkout-steps__sep">›</span>
+          <span className="checkout-steps__step">Order Confirmed</span>
+        </div>
+
+        <h1 className="checkout-page__title">Checkout</h1>
 
         {orderError && (
           <div className="order-error-banner">
@@ -200,242 +211,306 @@ const Checkout = () => {
         )}
 
         <div className="checkout-layout">
-          <div className="checkout-form">
-            <h3><i className="fa-solid fa-location-dot"></i> Shipping Address</h3>
+          {/* ── Left column ── */}
+          <div>
 
-            <div className="address-grid">
-              {/* Full Name – full width */}
-              <div className="field-group full-width">
-                <label className="field-label">Full Name</label>
-                <input
-                  type="text"
-                  className="inputBox"
-                  placeholder="John Doe"
-                  name="fullName"
-                  value={values.fullName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.fullName && <span className="error">{errors.fullName}</span>}
+            {/* Step 1 – Shipping Address */}
+            <div className="co-card">
+              <div className="co-card__header">
+                <span className="co-card__step-num">1</span>
+                <h2 className="co-card__title">Shipping Address</h2>
               </div>
 
-              {/* Address – full width */}
-              <div className="field-group full-width">
-                <label className="field-label">Street Address</label>
-                <input
-                  type="text"
-                  className="inputBox"
-                  placeholder="123 Main St, Apt 4B"
-                  name="address"
-                  value={values.address}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.address && <span className="error">{errors.address}</span>}
-              </div>
-
-              {/* City */}
-              <div className="field-group">
-                <label className="field-label">City</label>
-                <input
-                  type="text"
-                  className="inputBox"
-                  placeholder="New York"
-                  name="city"
-                  value={values.city}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.city && <span className="error">{errors.city}</span>}
-              </div>
-
-              {/* State */}
-              <div className="field-group">
-                <label className="field-label">State</label>
-                <select
-                  className="inputBox"
-                  name="state"
-                  value={values.state}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                >
-                  <option value="">Select State</option>
-                  {US_STATES.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-                {errors.state && <span className="error">{errors.state}</span>}
-              </div>
-
-              {/* Zip Code */}
-              <div className="field-group">
-                <label className="field-label">Zip Code</label>
-                <input
-                  type="text"
-                  className="inputBox"
-                  placeholder="10001"
-                  name="zipCode"
-                  value={values.zipCode}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.zipCode && <span className="error">{errors.zipCode}</span>}
-              </div>
-
-              {/* Phone */}
-              <div className="field-group">
-                <label className="field-label">Phone Number</label>
-                <input
-                  type="text"
-                  className="inputBox"
-                  placeholder="10-digit number"
-                  name="phone"
-                  value={values.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {errors.phone && <span className="error">{errors.phone}</span>}
-              </div>
-            </div>
-
-            <h3><i className="fa-solid fa-credit-card"></i> Payment Method</h3>
-            <select
-              className="inputBox"
-              name="paymentMethod"
-              value={values.paymentMethod}
-              onChange={handleChange}
-            >
-              <option value="cod">Cash on Delivery</option>
-              <option value="card">Credit / Debit Card</option>
-              <option value="upi">UPI</option>
-            </select>
-
-            {/* ── Credit Card Form ── */}
-            {values.paymentMethod === 'card' && (
-              <div className="card-inputs">
-                <div className="card-input-group">
-                  <label>Card Number</label>
+              <div className="address-grid">
+                <div className="field-group full-width">
+                  <label className="field-label">Full Name</label>
                   <input
                     type="text"
                     className="inputBox"
-                    placeholder="1234 5678 9012 3456"
-                    value={cardNumber}
-                    onChange={handleCardNumberChange}
-                    maxLength={19}
+                    placeholder="John Doe"
+                    name="fullName"
+                    value={values.fullName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
-                  {cardErrors.cardNumber && (
-                    <span className="error">{cardErrors.cardNumber}</span>
-                  )}
+                  {errors.fullName && <span className="error">{errors.fullName}</span>}
                 </div>
 
-                <div className="form-row">
-                  <div className="form-group card-input-group">
-                    <label>Expiry Date</label>
-                    <input
-                      type="text"
-                      className="inputBox"
-                      placeholder="MM/YY"
-                      value={cardExpiry}
-                      onChange={handleExpiryChange}
-                      maxLength={5}
-                    />
-                    {cardErrors.cardExpiry && (
-                      <span className="error">{cardErrors.cardExpiry}</span>
-                    )}
-                  </div>
+                <div className="field-group full-width">
+                  <label className="field-label">Street Address</label>
+                  <input
+                    type="text"
+                    className="inputBox"
+                    placeholder="123 Main St, Apt 4B"
+                    name="address"
+                    value={values.address}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.address && <span className="error">{errors.address}</span>}
+                </div>
 
-                  <div className="form-group card-input-group">
-                    <label>CVV</label>
-                    <input
-                      type="password"
-                      className="inputBox"
-                      placeholder="•••"
-                      value={cardCvv}
-                      onChange={handleCvvChange}
-                      maxLength={4}
-                    />
-                    {cardErrors.cardCvv && (
-                      <span className="error">{cardErrors.cardCvv}</span>
-                    )}
-                  </div>
+                <div className="field-group">
+                  <label className="field-label">City</label>
+                  <input
+                    type="text"
+                    className="inputBox"
+                    placeholder="New York"
+                    name="city"
+                    value={values.city}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.city && <span className="error">{errors.city}</span>}
+                </div>
+
+                <div className="field-group">
+                  <label className="field-label">State</label>
+                  <select
+                    className="inputBox"
+                    name="state"
+                    value={values.state}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  >
+                    <option value="">Select State</option>
+                    {US_STATES.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                  {errors.state && <span className="error">{errors.state}</span>}
+                </div>
+
+                <div className="field-group">
+                  <label className="field-label">Zip Code</label>
+                  <input
+                    type="text"
+                    className="inputBox"
+                    placeholder="10001"
+                    name="zipCode"
+                    value={values.zipCode}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.zipCode && <span className="error">{errors.zipCode}</span>}
+                </div>
+
+                <div className="field-group">
+                  <label className="field-label">Phone Number</label>
+                  <input
+                    type="text"
+                    className="inputBox"
+                    placeholder="10-digit number"
+                    name="phone"
+                    value={values.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {errors.phone && <span className="error">{errors.phone}</span>}
                 </div>
               </div>
-            )}
+            </div>
 
-            {values.paymentMethod === 'cod' && (
-              <div className="cod-info">
-                <i className="fa-solid fa-money-bill-wave"></i>
-                <span>Pay with cash when your order is delivered.</span>
+            {/* Step 2 – Payment Method */}
+            <div className="co-card">
+              <div className="co-card__header">
+                <span className="co-card__step-num">2</span>
+                <h2 className="co-card__title">Payment Method</h2>
               </div>
-            )}
 
-            <textarea
-              className="inputBox"
-              placeholder="Order Notes (Optional)"
-              name="notes"
-              value={values.notes}
-              onChange={handleChange}
-              rows="3"
-            />
+              <div className="payment-options">
+                {PAYMENT_OPTIONS.map(opt => (
+                  <label
+                    key={opt.value}
+                    className={`payment-option${values.paymentMethod === opt.value ? ' payment-option--selected' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      className="payment-option__radio"
+                      name="paymentMethod"
+                      value={opt.value}
+                      checked={values.paymentMethod === opt.value}
+                      onChange={handleChange}
+                    />
+                    <span className="payment-option__icon">{opt.icon}</span>
+                    <span className="payment-option__label">
+                      <strong>{opt.label}</strong>
+                      <small>{opt.desc}</small>
+                    </span>
+                  </label>
+                ))}
+              </div>
 
+              {/* Credit Card fields */}
+              {values.paymentMethod === 'card' && (
+                <div className="card-payment-section">
+                  {/* Visual card preview */}
+                  <div className="mock-card-preview">
+                    <div className="mock-card-chip">💳</div>
+                    <div className="mock-card-number">
+                      {cardNumber || '•••• •••• •••• ••••'}
+                    </div>
+                    <div className="mock-card-bottom">
+                      <div>
+                        <div className="mock-card-label">Card Holder</div>
+                        <div className="mock-card-holder">{cardName || values.fullName || 'YOUR NAME'}</div>
+                      </div>
+                      <div>
+                        <div className="mock-card-label">Expires</div>
+                        <div className="mock-card-expiry">{cardExpiry || 'MM/YY'}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card-inputs">
+                    <div className="card-input-group">
+                      <label>Name on Card</label>
+                      <input
+                        type="text"
+                        className="inputBox"
+                        placeholder="As printed on card"
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                        maxLength={26}
+                      />
+                    </div>
+
+                    <div className="card-input-group">
+                      <label>Card Number</label>
+                      <input
+                        type="text"
+                        className="inputBox"
+                        placeholder="1234 5678 9012 3456"
+                        value={cardNumber}
+                        onChange={handleCardNumberChange}
+                        maxLength={19}
+                      />
+                      {cardErrors.cardNumber && <span className="error">{cardErrors.cardNumber}</span>}
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group card-input-group">
+                        <label>Expiry Date</label>
+                        <input
+                          type="text"
+                          className="inputBox"
+                          placeholder="MM/YY"
+                          value={cardExpiry}
+                          onChange={handleExpiryChange}
+                          maxLength={5}
+                        />
+                        {cardErrors.cardExpiry && <span className="error">{cardErrors.cardExpiry}</span>}
+                      </div>
+
+                      <div className="form-group card-input-group">
+                        <label>CVV</label>
+                        <input
+                          type="password"
+                          className="inputBox"
+                          placeholder="•••"
+                          value={cardCvv}
+                          onChange={handleCvvChange}
+                          maxLength={4}
+                        />
+                        {cardErrors.cardCvv && <span className="error">{cardErrors.cardCvv}</span>}
+                      </div>
+                    </div>
+
+                    <p className="card-mock-note">
+                      <i className="fa-solid fa-lock"></i> Card details are for demo only and not stored.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {values.paymentMethod === 'cod' && (
+                <div className="cod-info">
+                  <i className="fa-solid fa-money-bill-wave"></i>
+                  <span>Pay with cash when your order is delivered.</span>
+                </div>
+              )}
+
+              {values.paymentMethod === 'upi' && (
+                <div className="cod-info" style={{ background: '#f0f4ff', borderColor: '#c7d2fe', color: '#3730a3' }}>
+                  <i className="fa-solid fa-mobile-screen"></i>
+                  <span>You'll receive a UPI payment request after placing your order.</span>
+                </div>
+              )}
+            </div>
+
+            {/* Step 3 – Order Notes */}
+            <div className="co-card">
+              <div className="co-card__header">
+                <span className="co-card__step-num">3</span>
+                <h2 className="co-card__title">Order Notes <span style={{ fontWeight: 400, fontSize: 14, color: '#888' }}>(Optional)</span></h2>
+              </div>
+              <textarea
+                className="inputBox"
+                placeholder="Any special instructions for your order…"
+                name="notes"
+                value={values.notes}
+                onChange={handleChange}
+                rows="3"
+                style={{ width: '100%', boxSizing: 'border-box', resize: 'vertical' }}
+              />
+            </div>
+
+            {/* Actions */}
             <div className="checkout-actions">
-              <button 
-                onClick={() => navigate('/cart')}
-                className="cancel-button"
-              >
-                Back to Cart
+              <button onClick={() => navigate('/cart')} className="cancel-button">
+                <i className="fa-solid fa-arrow-left"></i> Back to Cart
               </button>
-              <button 
-                onClick={handlePlaceOrder}
-                className="appButton"
-                disabled={orderLoading}
-              >
-                {orderLoading ? (
-                  <><i className="fa-solid fa-spinner fa-spin"></i> Placing Order...</>
-                ) : (
-                  <><i className="fa-solid fa-lock"></i> Place Order</>
-                )}
+              <button onClick={handlePlaceOrder} className="appButton" disabled={orderLoading}>
+                {orderLoading
+                  ? <><i className="fa-solid fa-spinner fa-spin"></i> Placing Order…</>
+                  : <><i className="fa-solid fa-lock"></i> Place Order</>
+                }
               </button>
             </div>
           </div>
 
-          {/* Order Summary Sidebar */}
+          {/* ── Right column: Order Summary ── */}
           <div className="order-summary-sidebar">
             <h3>Order Summary</h3>
-            
+
             <div className="summary-items">
               {cartItems.map(item => (
                 <div key={item._id} className="summary-item">
                   <div className="summary-item-info">
                     <p className="item-name">{item.name}</p>
-                    <p className="item-details">
-                      ${item.price} × {item.quantity}
-                    </p>
+                    <p className="item-details">${Number(item.price).toFixed(2)} × {item.quantity}</p>
                   </div>
-                  <p className="item-subtotal">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
+                  <p className="item-subtotal">${(Number(item.price) * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
             </div>
 
-            <div className="summary-divider"></div>
+            <div className="summary-divider" />
 
             <div className="summary-row">
-              <span>Subtotal:</span>
+              <span>Subtotal ({cartItems.reduce((s, i) => s + i.quantity, 0)} items):</span>
               <span>${totalAmount.toFixed(2)}</span>
             </div>
-
             <div className="summary-row">
               <span>Shipping:</span>
               <span className="free-text">FREE</span>
             </div>
+            <div className="summary-row">
+              <span>Tax:</span>
+              <span>$0.00</span>
+            </div>
 
-            <div className="summary-divider"></div>
+            <div className="summary-divider" />
 
             <div className="summary-total">
-              <span>Total:</span>
+              <span>Order Total:</span>
               <span>${totalAmount.toFixed(2)}</span>
+            </div>
+
+            {/* Security badge */}
+            <div className="security-badge">
+              <i className="fa-solid fa-lock"></i>
+              <span>Secure checkout — your data is protected</span>
             </div>
           </div>
         </div>
