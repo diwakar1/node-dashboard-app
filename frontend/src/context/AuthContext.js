@@ -86,6 +86,11 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem(TOKEN_CONFIG.USER_KEY, JSON.stringify(updatedUser));
+  };
+
   const value = {
     user,
     isAuthenticated,
@@ -94,6 +99,7 @@ export function AuthProvider({ children }) {
     logout,
     signup,
     isAdmin,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -9,6 +9,7 @@
 import express from 'express';
 import * as authController from '../controllers/authController.js';
 import { registrationValidation, loginValidation } from '../middleware/validation.js';
+import verifyToken from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
@@ -124,5 +125,10 @@ router.post('/login', loginValidation, authController.login);
  *       403:
  *         description: Invalid or expired refresh token
  */
+
+// Protected profile routes
+router.get('/profile', verifyToken, authController.getProfile);
+router.put('/profile', verifyToken, authController.updateProfile);
+router.put('/change-password', verifyToken, authController.changePassword);
 
 export default router;

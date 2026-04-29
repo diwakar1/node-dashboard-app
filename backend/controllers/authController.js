@@ -49,6 +49,70 @@ export const signup = async (req, res) => {
  * @param {Object} req.body - Login credentials {email, password}
  * @returns {Promise<{user: User, accessToken: string, refreshToken: string}>} User with access and refresh tokens
  */
+/**
+ * Get current authenticated user's profile
+ */
+export const getProfile = async (req, res) => {
+    try {
+        const user = await userService.findUserById(req.user.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        const userObj = user.toObject();
+        delete userObj.password;
+        res.json({ user: userObj });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to fetch profile');
+    }
+};
+
+/**
+ * Update authenticated user's profile (name)
+ */
+export const updateProfile = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name || name.trim().length < 2) {
+            return res.status(400).json({ error: 'Name must be at least 2 characters' });
+        }
+        const user = await userService.findUserById(req.user.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        user.name = name.trim();
+        await user.save();
+        const userObj = user.toObject();
+        delete userObj.password;
+        log('Profile updated:', userObj.email);
+        res.json({ user: userObj });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to update profile');
+    }
+};
+
+/**
+ * Change authenticated user's password
+ */
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: 'Current and new password are required' });
+        }
+        if (newPassword.length < 6) {
+            return res.status(400).json({ error: 'New password must be at least 6 characters' });
+        }
+        const user = await userService.findUserById(req.user.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        const match = await userService.comparePassword(currentPassword, user.password);
+        if (!match) {
+            return res.status(400).json({ error: 'Current password is incorrect' });
+        }
+        user.password = await userService.hashPassword(newPassword);
+        await user.save();
+        log('Password changed for:', user.email);
+        res.json({ message: 'Password updated successfully' });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to change password');
+    }
+};
+
 export const login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

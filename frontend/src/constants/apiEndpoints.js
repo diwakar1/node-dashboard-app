@@ -33,3 +33,10 @@ export const ORDER_ENDPOINTS = {
   CANCEL: (id) => `${API_BASE_URL}${API_VERSION}/orders/${id}/cancel`,
 };
 
+// User / Profile Endpoints
+export const USER_ENDPOINTS = {
+  GET_PROFILE:     `${API_BASE_URL}${API_VERSION}/auth/profile`,
+  UPDATE_PROFILE:  `${API_BASE_URL}${API_VERSION}/auth/profile`,
+  CHANGE_PASSWORD: `${API_BASE_URL}${API_VERSION}/auth/change-password`,
+};
+

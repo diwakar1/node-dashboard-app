@@ -20,6 +20,10 @@ export const findUserByEmail = async (email) => {
     return await User.findOne({ email });
 };
 
+export const findUserById = async (id) => {
+    return await User.findById(id);
+};
+
 /**
  * Create a new user with hashed password
  * @param {Object} userData - User registration data
