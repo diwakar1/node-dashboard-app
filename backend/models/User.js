@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     name: String,
-    email: String,
+    email: { type: String, sparse: true },
     password: String,
     role: {
         type: String,
@@ -25,6 +25,15 @@ const userSchema = new mongoose.Schema({
     emailVerificationExpires: {
         type: Date,
         default: null
+    },
+    // OAuth fields
+    googleId: { type: String, default: null },
+    githubId: { type: String, default: null },
+    avatar: { type: String, default: null },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google', 'github'],
+        default: 'local'
     }
 }, {
     timestamps: true

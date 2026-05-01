@@ -22,6 +22,7 @@ import cors from 'cors';
 import logger from './middleware/logger.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
+import passport from './config/passport.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -35,6 +36,7 @@ import orderRoutes from './routes/order.js';
 const app = express();
 app.use(express.json());
 app.use(logger);
+app.use(passport.initialize());
 
 const corsOptions = {
   origin: process.env.NODE_ENV === "production" 

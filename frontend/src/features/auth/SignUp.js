@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useForm } from "../../hooks/useForm";
 import { VALIDATION_RULES, UI_CONSTANTS } from "../../constants/config";
 import { AUTH_ERRORS, VALIDATION_ERRORS } from "../../constants/errorMessages";
+import { AUTH_ENDPOINTS } from "../../constants/apiEndpoints";
 import "../../styles/login.css";
 
 const SignUp = () => {
@@ -146,6 +147,27 @@ const SignUp = () => {
           By creating an account you agree to our{" "}
           <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
         </p>
+
+        <div className="auth-divider">or sign up with</div>
+
+        <div className="auth-sso-row">
+          <button
+            type="button"
+            className="auth-sso-btn"
+            onClick={() => { window.location.href = AUTH_ENDPOINTS.GOOGLE_SSO; }}
+          >
+            <i className="fab fa-google" />
+            Google
+          </button>
+          <button
+            type="button"
+            className="auth-sso-btn"
+            onClick={() => { window.location.href = AUTH_ENDPOINTS.GITHUB_SSO; }}
+          >
+            <i className="fab fa-github" />
+            GitHub
+          </button>
+        </div>
 
         <p className="auth-footer">
           Already have an account? <Link to="/login">Sign in</Link>

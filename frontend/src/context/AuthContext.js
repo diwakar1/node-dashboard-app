@@ -91,6 +91,12 @@ export function AuthProvider({ children }) {
     localStorage.setItem(TOKEN_CONFIG.USER_KEY, JSON.stringify(updatedUser));
   };
 
+  // Called by OAuthCallback after tokens are already stored in localStorage
+  const setOAuthSession = (userData) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
   const value = {
     user,
     isAuthenticated,
@@ -100,6 +106,7 @@ export function AuthProvider({ children }) {
     signup,
     isAdmin,
     updateUser,
+    setOAuthSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

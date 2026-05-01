@@ -1,14 +1,16 @@
 ﻿import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useForm } from "../../hooks/useForm";
 import { VALIDATION_RULES } from "../../constants/config";
 import { AUTH_ERRORS } from "../../constants/errorMessages";
+import { AUTH_ENDPOINTS } from "../../constants/apiEndpoints";
 import "../../styles/login.css";
 
 const Login = () => {
   const { login, isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
   const { values, errors, handleChange, validate, setFieldError } = useForm({
     initialValues: { email: "", password: "" },
     validationRules: {
@@ -27,6 +29,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Show error if OAuth redirect failed
+  const oauthError = searchParams.get('error');
 
   useEffect(() => {
     if (isAuthenticated) navigate("/");
@@ -65,6 +70,13 @@ const Login = () => {
           <div className="auth-server-error">
             <i className="fas fa-circle-exclamation" />
             {errors.server}
+          </div>
+        )}
+
+        {oauthError && (
+          <div className="auth-server-error">
+            <i className="fas fa-circle-exclamation" />
+            Sign-in with Google/GitHub failed. Please try again.
           </div>
         )}
 
@@ -134,7 +146,7 @@ const Login = () => {
           <button
             type="button"
             className="auth-sso-btn"
-            onClick={() => alert("Single sign-on coming soon.")}
+            onClick={() => { window.location.href = AUTH_ENDPOINTS.GOOGLE_SSO; }}
           >
             <i className="fab fa-google" />
             Google
@@ -142,7 +154,7 @@ const Login = () => {
           <button
             type="button"
             className="auth-sso-btn"
-            onClick={() => alert("Single sign-on coming soon.")}
+            onClick={() => { window.location.href = AUTH_ENDPOINTS.GITHUB_SSO; }}
           >
             <i className="fab fa-github" />
             GitHub
