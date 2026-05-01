@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { SignUp, Login } from "../features/auth";
+import { SignUp, Login, VerifyEmail } from "../features/auth";
 import { PrivateComponent } from "../shared/common";
 import { AddProduct, ProductList, Update } from "../features/product";
 import { Profile } from "../features/profile";
@@ -26,6 +26,8 @@ export default function AppRoutes() {
       </Route>
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
+      {/* Public route — user arrives here from verification email link */}
+      <Route path="/verify-email" element={<VerifyEmail />} />
     </Routes>
   );
 }

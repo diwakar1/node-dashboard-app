@@ -10,6 +10,8 @@ import { validationResult } from 'express-validator';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { handleControllerError } from '../utils/errorHandler.js';
+import * as userService from '../services/userService.js';
+import { sendOrderConfirmationEmail } from '../services/emailService.js';
 
 /**
  * Create a new order
@@ -66,7 +68,16 @@ export const createOrder = async (req, res) => {
 
         await order.save();
         log('Order created:', order._id, 'by user:', req.user.email);
-        
+
+        // Send order confirmation email if user's email is verified (fire-and-forget)
+        userService.findUserById(userId).then((user) => {
+            if (user) {
+                sendOrderConfirmationEmail(user.toObject(), order).catch((err) =>
+                    log('Order confirmation email failed (non-critical):', err.message)
+                );
+            }
+        }).catch(() => {});
+
         res.status(201).json({ 
             success: true,
             order 

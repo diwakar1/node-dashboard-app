@@ -11,6 +11,8 @@ import * as userService from '../services/userService.js';
 import RefreshToken from '../models/refreshToken.js';
 import { handleControllerError } from '../utils/errorHandler.js';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import { sendVerificationEmail } from '../services/emailService.js';
 
 /**
  * @typedef {import('../models/User')} User
@@ -33,11 +35,24 @@ export const signup = async (req, res) => {
         return res.status(400).json({ error: "Email already exists" });
     }
     try {
-        let user = await userService.createUser(req.body);
+        // Generate a secure random verification token
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+        let user = await userService.createUser(req.body, {
+            emailVerificationToken: tokenHash,
+            emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 h
+        });
+
+        // Send verification email (fire-and-forget — don't block signup on SMTP failure)
+        sendVerificationEmail(user, rawToken).catch((err) =>
+            log('Verification email failed (non-critical):', err.message)
+        );
+
         user = user.toObject();
         delete user.password;
         log('User registered:', user.email);
-        res.send({ user });
+        res.send({ user, message: 'Registration successful. Please check your email to verify your account.' });
     } catch (e) {
         log('Registration error:', e.message);
         handleControllerError(res, e, 'Registration failed');
@@ -162,5 +177,76 @@ export const login = async (req, res) => {
     } catch (err) {
         log('JWT generation error:', err.message);
         handleControllerError(res, err, 'Authentication failed');
+    }
+};
+
+/**
+ * Verify email address using the token from the verification link.
+ * @route GET /api/v1/auth/verify-email?token=...
+ */
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).json({ error: 'Verification token is required.' });
+        }
+
+        const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await userService.findUserByVerificationToken(tokenHash);
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired verification link.' });
+        }
+
+        if (user.emailVerificationExpires < new Date()) {
+            return res.status(400).json({ error: 'Verification link has expired. Please request a new one.' });
+        }
+
+        user.isEmailVerified = true;
+        user.emailVerificationToken = null;
+        user.emailVerificationExpires = null;
+        await user.save();
+
+        log('Email verified for:', user.email);
+        res.json({ message: 'Email verified successfully! You can now receive order confirmations.' });
+    } catch (e) {
+        handleControllerError(res, e, 'Email verification failed');
+    }
+};
+
+/**
+ * Resend verification email for the authenticated user.
+ * @route POST /api/v1/auth/resend-verification
+ */
+export const resendVerificationEmail = async (req, res) => {
+    try {
+        const user = await userService.findUserById(req.user.userId);
+        if (!user) return res.status(404).json({ error: 'User not found.' });
+
+        if (user.isEmailVerified) {
+            return res.status(400).json({ error: 'Email is already verified.' });
+        }
+
+        // Rate-limit: don't resend if a fresh token was issued in the last 2 minutes
+        if (
+            user.emailVerificationExpires &&
+            user.emailVerificationExpires > new Date(Date.now() + 24 * 60 * 60 * 1000 - 2 * 60 * 1000)
+        ) {
+            return res.status(429).json({ error: 'Please wait a moment before requesting another verification email.' });
+        }
+
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+        user.emailVerificationToken = tokenHash;
+        user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await user.save();
+
+        await sendVerificationEmail(user, rawToken);
+
+        log('Resent verification email to:', user.email);
+        res.json({ message: 'Verification email sent. Please check your inbox.' });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to resend verification email');
     }
 };

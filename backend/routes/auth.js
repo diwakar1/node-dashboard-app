@@ -131,4 +131,8 @@ router.get('/profile', verifyToken, authController.getProfile);
 router.put('/profile', verifyToken, authController.updateProfile);
 router.put('/change-password', verifyToken, authController.changePassword);
 
+// Email verification routes
+router.get('/verify-email', authController.verifyEmail);
+router.post('/resend-verification', verifyToken, authController.resendVerificationEmail);
+
 export default router;

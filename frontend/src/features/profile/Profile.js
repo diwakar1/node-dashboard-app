@@ -61,6 +61,10 @@ const Profile = () => {
   const [pwLoading, setPwLoading] = useState(false);
   const [pwStatus, setPwStatus] = useState({ type: "", msg: "" });
 
+  // ── email verification ──
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendStatus, setResendStatus] = useState({ type: "", msg: "" });
+
   /* fetch fresh profile on mount */
   useEffect(() => {
     let cancelled = false;
@@ -112,6 +116,25 @@ const Profile = () => {
       setNameStatus({ type: "error", msg: "Network error. Please try again." });
     } finally {
       setNameLoading(false);
+    }
+  };
+
+  /* ── resend verification email ── */
+  const handleResendVerification = async () => {
+    setResendStatus({ type: "", msg: "" });
+    setResendLoading(true);
+    try {
+      const res = await authFetch(USER_ENDPOINTS.RESEND_VERIFICATION, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setResendStatus({ type: "success", msg: data.message || "Verification email sent. Please check your inbox." });
+      } else {
+        setResendStatus({ type: "error", msg: data.error || "Failed to send verification email." });
+      }
+    } catch {
+      setResendStatus({ type: "error", msg: "Network error. Please try again." });
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -212,6 +235,12 @@ const Profile = () => {
               <span className="profile-info-row__value">{profile.email}</span>
             </div>
             <div className="profile-info-row">
+              <span className="profile-info-row__label">Email Status</span>
+              <span className="profile-info-row__value" style={{ color: profile.isEmailVerified ? "#16a34a" : "#d97706", fontWeight: 600 }}>
+                {profile.isEmailVerified ? "Verified ✓" : "Not Verified"}
+              </span>
+            </div>
+            <div className="profile-info-row">
               <span className="profile-info-row__label">Role</span>
               <span className="profile-info-row__value" style={{ textTransform: "capitalize" }}>{profile.role}</span>
             </div>
@@ -270,6 +299,50 @@ const Profile = () => {
                   </button>
                 </div>
               </form>
+            )}
+          </div>
+        </div>
+
+        {/* ── Email Verification ── */}
+        <div className="profile-grid">
+          <div className="profile-card profile-card--full">
+            <div className="profile-card__header">
+              <span className="profile-card__icon">✉️</span>
+              <h3 className="profile-card__title">Email Verification</h3>
+            </div>
+            {profile.isEmailVerified ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: "#16a34a", fontSize: 20 }}>&#10003;</span>
+                <span style={{ color: "#16a34a", fontWeight: 600 }}>
+                  Your email is verified. You will receive order confirmation emails.
+                </span>
+              </div>
+            ) : (
+              <>
+                <div style={{
+                  background: "#fef3c7",
+                  border: "1px solid #f59e0b",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  marginBottom: 14,
+                  color: "#92400e",
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                }}>
+                  <strong>Your email is not verified.</strong> Verify your email to receive
+                  order confirmation emails after placing an order. Check your inbox for the
+                  verification link sent at signup, or request a new one below.
+                </div>
+                <Alert type={resendStatus.type} msg={resendStatus.msg} />
+                <button
+                  className="profile-btn profile-btn--primary"
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                >
+                  {resendLoading && <span className="profile-spinner" />}
+                  Resend Verification Email
+                </button>
+              </>
             )}
           </div>
         </div>

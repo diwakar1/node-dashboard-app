@@ -27,14 +27,16 @@ export const findUserById = async (id) => {
 /**
  * Create a new user with hashed password
  * @param {Object} userData - User registration data
+ * @param {Object} [extraFields] - Additional fields to set (e.g. email verification)
  * @returns {Promise<User>}
  */
-export const createUser = async (userData) => {
+export const createUser = async (userData, extraFields = {}) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = new User({
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
+        ...extraFields,
     });
     return await user.save();
 };
@@ -45,6 +47,10 @@ export const comparePassword = async (plain, hash) => {
 
 export const hashPassword = async (plain) => {
     return await bcrypt.hash(plain, 10);
+};
+
+export const findUserByVerificationToken = async (tokenHash) => {
+    return await User.findOne({ emailVerificationToken: tokenHash });
 };
 
 
