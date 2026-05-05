@@ -3,6 +3,7 @@
  * Global cart state management with localStorage persistence
  */
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
@@ -15,33 +16,39 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
+    const { user, loading: authLoading } = useAuth();
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Load cart from localStorage on mount
-    useEffect(() => {
-        try {
-            const savedCart = localStorage.getItem('cart');
-            if (savedCart) {
-                setCartItems(JSON.parse(savedCart));
-            }
-        } catch (error) {
-            console.error('Error loading cart from localStorage:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    // Scope the storage key to the logged-in user so carts never bleed between accounts.
+    const cartKey = user?._id ? `cart_${user._id}` : null;
 
-    // Save cart to localStorage whenever it changes
+    // Reload cart whenever the user changes (login, logout, SSO switch).
+    // Wait for auth to finish initialising first.
     useEffect(() => {
-        if (!loading) {
+        if (authLoading) return;
+        if (cartKey) {
             try {
-                localStorage.setItem('cart', JSON.stringify(cartItems));
-            } catch (error) {
-                console.error('Error saving cart to localStorage:', error);
+                const saved = localStorage.getItem(cartKey);
+                setCartItems(saved ? JSON.parse(saved) : []);
+            } catch {
+                setCartItems([]);
             }
+        } else {
+            // No user logged in — show empty cart
+            setCartItems([]);
         }
-    }, [cartItems, loading]);
+        setLoading(false);
+    }, [cartKey, authLoading]);
+
+    // Persist cart under the user-specific key whenever it changes
+    useEffect(() => {
+        if (!loading && cartKey) {
+            try {
+                localStorage.setItem(cartKey, JSON.stringify(cartItems));
+            } catch {}
+        }
+    }, [cartItems, loading, cartKey]);
 
     // Add item to cart
     const addToCart = (product, quantity = 1) => {
