@@ -12,6 +12,8 @@ export const AUTH_ENDPOINTS = {
   SIGNUP: `${API_BASE_URL}${API_VERSION}/auth/signup`,
   REFRESH: `${API_BASE_URL}${API_VERSION}/auth/refresh`,
   LOGOUT: `${API_BASE_URL}${API_VERSION}/auth/logout`,
+  FORGOT_PASSWORD: `${API_BASE_URL}${API_VERSION}/auth/forgot-password`,
+  RESET_PASSWORD: `${API_BASE_URL}${API_VERSION}/auth/reset-password`,
   // OAuth SSO — these trigger a full browser redirect (not fetch), so we need
   // the actual backend URL even in dev (Vite proxy doesn't handle redirects).
   GOOGLE_SSO: `http://localhost:5000${API_VERSION}/auth/google`,

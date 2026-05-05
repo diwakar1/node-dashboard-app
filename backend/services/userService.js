@@ -53,6 +53,10 @@ export const findUserByVerificationToken = async (tokenHash) => {
     return await User.findOne({ emailVerificationToken: tokenHash });
 };
 
+export const findUserByResetToken = async (tokenHash) => {
+    return await User.findOne({ passwordResetToken: tokenHash });
+};
+
 
 // Generate access token (short-lived)
 export const generateAccessToken = (user, secret) => {

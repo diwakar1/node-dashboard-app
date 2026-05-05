@@ -123,13 +123,12 @@ const Login = () => {
           {errors.password && <span className="auth-field-error">{errors.password}</span>}
         </div>
 
-        <a
-          href="#"
+        <Link
+          to="/forgot-password"
           className="auth-forgot"
-          onClick={(e) => { e.preventDefault(); alert("Password reset coming soon."); }}
         >
           Forgot password?
-        </a>
+        </Link>
 
         <button
           type="button"

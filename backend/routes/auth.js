@@ -138,6 +138,10 @@ router.put('/change-password', verifyToken, authController.changePassword);
 router.get('/verify-email', authController.verifyEmail);
 router.post('/resend-verification', verifyToken, authController.resendVerificationEmail);
 
+// Password reset routes (public — no auth required)
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword);
+
 // ── OAuth SSO helper ──────────────────────────────────────────────────────────
 // After passport authenticates the user, issue our own JWTs and redirect to
 // the frontend /oauth-callback page with tokens in the query string.

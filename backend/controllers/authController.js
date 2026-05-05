@@ -13,6 +13,7 @@ import { handleControllerError } from '../utils/errorHandler.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { sendVerificationEmail } from '../services/emailService.js';
+import { sendPasswordResetEmail } from '../services/emailService.js';
 
 /**
  * @typedef {import('../models/User')} User
@@ -248,5 +249,77 @@ export const resendVerificationEmail = async (req, res) => {
         res.json({ message: 'Verification email sent. Please check your inbox.' });
     } catch (e) {
         handleControllerError(res, e, 'Failed to resend verification email');
+    }
+};
+
+/**
+ * Initiate password reset — send a reset link to the user's email.
+ * Always responds with 200 to avoid leaking whether the email exists.
+ * @route POST /api/v1/auth/forgot-password
+ */
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required.' });
+        }
+
+        const user = await userService.findUserByEmail(email);
+
+        // Silently succeed if user not found (don't reveal account existence)
+        if (!user || user.authProvider !== 'local') {
+            log('Forgot-password: no local account for', email);
+            return res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+        }
+
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+        user.passwordResetToken = tokenHash;
+        user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        await user.save();
+
+        await sendPasswordResetEmail(user, rawToken);
+
+        log('Password reset email sent to:', user.email);
+        res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to send password reset email');
+    }
+};
+
+/**
+ * Reset the user's password using the token from the reset link.
+ * @route POST /api/v1/auth/reset-password
+ */
+export const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).json({ error: 'Token and new password are required.' });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+        }
+
+        const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await userService.findUserByResetToken(tokenHash);
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired reset link.' });
+        }
+        if (user.passwordResetExpires < new Date()) {
+            return res.status(400).json({ error: 'Reset link has expired. Please request a new one.' });
+        }
+
+        user.password = await userService.hashPassword(password);
+        user.passwordResetToken = null;
+        user.passwordResetExpires = null;
+        await user.save();
+
+        log('Password reset successful for:', user.email);
+        res.json({ message: 'Password reset successfully. You can now log in with your new password.' });
+    } catch (e) {
+        handleControllerError(res, e, 'Failed to reset password');
     }
 };
