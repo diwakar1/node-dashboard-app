@@ -43,7 +43,7 @@ function Alert({ type, msg }) {
 
 /* ─── main component ─── */
 const Profile = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   // ── profile data from server ──
@@ -390,48 +390,50 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ── Quick Links ── */}
-        <div className="profile-grid">
-          <div className="profile-card">
-            <div className="profile-card__header">
-              <span className="profile-card__icon">📦</span>
-              <h3 className="profile-card__title">Orders</h3>
-            </div>
-            <p style={{ fontSize: 14, color: "#555", marginBottom: 14 }}>
-              View and manage your past orders.
-            </p>
-            <button
-              className="profile-btn profile-btn--primary"
-              onClick={() => navigate("/orders")}
-            >
-              View Orders
-            </button>
-          </div>
-
-          <div className="profile-card">
-            <div className="profile-card__header">
-              <span className="profile-card__icon">🛒</span>
-              <h3 className="profile-card__title">Cart &amp; Checkout</h3>
-            </div>
-            <p style={{ fontSize: 14, color: "#555", marginBottom: 14 }}>
-              Review items in your cart or continue shopping.
-            </p>
-            <div style={{ display: "flex", gap: 8 }}>
+        {/* ── Quick Links (non-admin only) ── */}
+        {!isAdmin() && (
+          <div className="profile-grid">
+            <div className="profile-card">
+              <div className="profile-card__header">
+                <span className="profile-card__icon">📦</span>
+                <h3 className="profile-card__title">Orders</h3>
+              </div>
+              <p style={{ fontSize: 14, color: "#555", marginBottom: 14 }}>
+                View and manage your past orders.
+              </p>
               <button
                 className="profile-btn profile-btn--primary"
-                onClick={() => navigate("/cart")}
+                onClick={() => navigate("/orders")}
               >
-                View Cart
-              </button>
-              <button
-                className="profile-btn profile-btn--secondary"
-                onClick={() => navigate("/products")}
-              >
-                Shop
+                View Orders
               </button>
             </div>
+
+            <div className="profile-card">
+              <div className="profile-card__header">
+                <span className="profile-card__icon">🛒</span>
+                <h3 className="profile-card__title">Cart &amp; Checkout</h3>
+              </div>
+              <p style={{ fontSize: 14, color: "#555", marginBottom: 14 }}>
+                Review items in your cart or continue shopping.
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  className="profile-btn profile-btn--primary"
+                  onClick={() => navigate("/cart")}
+                >
+                  View Cart
+                </button>
+                <button
+                  className="profile-btn profile-btn--secondary"
+                  onClick={() => navigate("/products")}
+                >
+                  Shop
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── Sign Out ── */}
         <div className="profile-grid">
