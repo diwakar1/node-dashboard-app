@@ -1,0 +1,27 @@
+# Dependencies
+**/node_modules
+
+# Git
+.git
+.gitignore
+
+# Environment files (injected at runtime via docker-compose env_file / environment)
+**/.env
+
+# Build outputs (rebuilt inside Docker)
+**/dist
+frontend/build
+
+# Logs
+**/*.log
+**/npm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Test artefacts
+**/coverage
+backend/tests

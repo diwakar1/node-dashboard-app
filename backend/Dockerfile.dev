@@ -1,0 +1,20 @@
+FROM node:20-alpine
+WORKDIR /workspace
+
+# ── Build shared TypeScript package ──────────────────────────────────────────
+COPY shared/package.json shared/tsconfig.json ./shared/
+COPY shared/src ./shared/src/
+RUN cd shared && npm install && npm run build
+
+# ── Install backend dependencies ──────────────────────────────────────────────
+# Copy only package.json first to leverage Docker layer cache.
+# node_modules will be preserved via a named volume in docker-compose.
+COPY backend/package.json ./backend/
+RUN cd backend && npm install
+
+WORKDIR /workspace/backend
+
+# Source code is bind-mounted at runtime by docker-compose (./backend).
+# node_modules is preserved by a separate named volume so host files
+# never overwrite the container-installed modules.
+CMD ["npm", "start"]

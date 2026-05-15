@@ -1,0 +1,47 @@
+# Production compose — single app container (backend serves React build)
+# + managed MongoDB.
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml up --build -d
+#
+# To pass a custom API origin (only needed when backend & frontend are
+# on different hosts), add: --build-arg VITE_API_URL=https://api.example.com
+
+services:
+
+  # ── MongoDB ──────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    # Port NOT exposed externally in production
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── App (backend + bundled frontend) ─────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Uncomment and set if API and frontend are on different origins:
+      # args:
+      #   VITE_API_URL: https://api.example.com
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env         # JWT secrets, SMTP credentials, etc.
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/e-comm
+      - FRONTEND_URL=http://localhost:5000   # update to your real domain
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

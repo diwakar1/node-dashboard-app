@@ -1,0 +1,84 @@
+# Development compose — hot-reload for backend (nodemon) and frontend (Vite).
+# Prerequisites:
+#   1. Copy backend/.env.example -> backend/.env and fill in values.
+#      MONGO_URI is overridden below to point at the mongo service,
+#      so you can leave it as-is in .env for development.
+#   2. docker compose up --build
+
+services:
+
+  # ── MongoDB ──────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"          # expose for tools like MongoDB Compass
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Mongo Seeder ─────────────────────────────────────────────────────────
+  # Runs once after mongo is healthy and restores the BSON dump.
+  # --drop ensures collections are always replaced with the dump data.
+  # Works regardless of whether the volume is new or already exists.
+  mongo-seed:
+    image: mongo:7
+    restart: "no"
+    volumes:
+      - ./mongo-dump:/mongo-dump:ro
+    depends_on:
+      mongo:
+        condition: service_healthy
+    command: >
+      mongorestore
+      --host mongo:27017
+      --db e-comm
+      --drop
+      /mongo-dump/e-comm
+
+  # ── Backend (Express + nodemon) ───────────────────────────────────────────
+  backend:
+    build:
+      context: .               # build context is the repo root
+      dockerfile: backend/Dockerfile.dev
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env         # load your secrets (JWT, SMTP, etc.)
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/e-comm   # override .env value
+      - CHOKIDAR_USEPOLLING=true                 # reliable file-watching on Windows/WSL2
+    volumes:
+      - ./backend:/workspace/backend             # live source reload
+      - backend_modules:/workspace/backend/node_modules  # keep container's node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend (Vite dev server) ────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:5000          # used by vite.config.js proxy
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/workspace/frontend           # live source reload
+      - frontend_modules:/workspace/frontend/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  backend_modules:
+  frontend_modules:

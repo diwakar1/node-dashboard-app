@@ -20,11 +20,15 @@ export default defineConfig({
   },
   
   server: {
+    host: '0.0.0.0',   // bind to all interfaces so Docker port mapping works
     port: 3000,
-    open: true,
+    open: false,        // don't try to open a browser inside the container
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        // In Docker dev the backend is reachable via the service name.
+        // Set BACKEND_URL=http://backend:5000 in docker-compose environment.
+        // Falls back to localhost for running outside Docker.
+        target: process.env.BACKEND_URL || 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       }

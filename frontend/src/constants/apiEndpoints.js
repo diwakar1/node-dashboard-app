@@ -1,9 +1,10 @@
 // API Configuration
-// In development with proxy: uses relative URLs (e.g., /api/v1/...)
-// In production: uses full URL from environment variable
-export const API_BASE_URL = import.meta.env.MODE === 'production' 
-  ? (import.meta.env.VITE_API_URL || "http://localhost:5000")
-  : "";
+// Relative URL ("") works for both:
+//   • Development  — Vite dev-server proxies /api to the backend
+//   • Production   — backend serves the React build on the same origin
+// Set VITE_API_URL at build time only when API and frontend are on
+// different origins (e.g. VITE_API_URL=https://api.example.com).
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 export const API_VERSION = "/api/v1";
 
 // Auth Endpoints
